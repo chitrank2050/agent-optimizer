@@ -36,21 +36,25 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,vue,json,md,yml,yaml,css}\"",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
-    "db:generate": "pnpm --filter @agent-optimizer/api db:generate"
+    "db:generate": "pnpm --filter @agent-optimizer/api db:generate",
+    "// --- ⚙️ Maintenance ---": "",
+    "setup": "pnpm install --force && pnpm run db:generate && pnpm run db:deploy",
+    "db:reset": "pnpm --filter backend run db:migrate reset --force",
+    "nuke": "rm -rf node_modules pnpm-lock.yaml && pnpm install",
+    "deps:update": "pnpm update --interactive --latest"
   },
   "devDependencies": {
     "@chitrank2050/git-hygiene": "^0.4.12",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.9.1",
     "prettier": "^3.6.2",
     "turbo": "^2.6.1",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "packageManager": "pnpm@11.1.3",
   "engines": {
     "node": ">=24.0.0",
     "pnpm": ">=11.0.0"
   },
-
   "git-hygiene": {
     "ignoreBranches": [
       "main"
