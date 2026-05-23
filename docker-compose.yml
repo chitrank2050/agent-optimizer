@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: agent-optimizer-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5433'
+    environment:
+      POSTGRES_USER: optimizer
+      POSTGRES_PASSWORD: optimizer_dev
+      POSTGRES_DB: agent_optimizer
+    networks:
+      - agent-optimizer-net
+    volumes:
+      - agent-optimizer-postgres-data:/var/lib/postgresql
+  healthcheck:
+    test: ['CMD-SHELL', 'pg_isready -U meterplex -d meterplex']
+    interval: 5s
+    timeout: 5s
+    retries: 5
+  deploy:
+    resources:
+      limits:
+        memory: 512M
+        cpus: '0.5'
+
+networks:
+  agent-optimizer-net:
+    name: agent-optimizer-internal
+    driver: bridge
+
+volumes:
+  agent-optimizer-postgres-data:
