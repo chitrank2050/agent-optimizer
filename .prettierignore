@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.turbo
+*.db
+*.db-journal
+package.json
+pnpm-lock.yaml
+coverage
+.env
