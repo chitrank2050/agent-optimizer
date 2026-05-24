@@ -1,0 +1,188 @@
+// Agent Optimizer - Prisma Schema
+//
+// Phase 1 defines the durable backbone for the optimizer loop:
+// HighLevel account context -> agents -> transcripts -> findings -> tests -> recommendations.
+// Later phases should extend these tables rather than replacing mocked storage.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RecommendationTarget {
+  PROMPT
+  TEMPERATURE
+  MODEL
+  TOOL
+  ACTION
+  KNOWLEDGE_BASE
+  GUARDRAIL
+
+  @@map("recommendation_target")
+}
+
+enum RecommendationStatus {
+  PROPOSED
+  APPROVED
+  REJECTED
+  APPLIED
+
+  @@map("recommendation_status")
+}
+
+enum TestPathType {
+  HAPPY_PATH
+  EDGE_CASE
+
+  @@map("test_path_type")
+}
+
+enum FindingSeverity {
+  LOW
+  MEDIUM
+  HIGH
+
+  @@map("finding_severity")
+}
+
+model Tenant {
+  id String @id @default(uuid()) @db.Uuid
+
+  /// HighLevel agency/company id from signed marketplace context.
+  ghlCompanyId String @unique @map("ghl_company_id") @db.VarChar(128)
+
+  name      String  @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  locations Location[]
+
+  @@map("tenants")
+}
+
+model Location {
+  id String @id @default(uuid()) @db.Uuid
+
+  tenantId String @map("tenant_id") @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  /// HighLevel sub-account/location id. Nullable for agency-only installs.
+  ghlLocationId String? @unique @map("ghl_location_id") @db.VarChar(128)
+
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  agents Agent[]
+
+  @@index([tenantId])
+  @@map("locations")
+}
+
+model Agent {
+  id String @id @default(uuid()) @db.Uuid
+
+  locationId String   @map("location_id") @db.Uuid
+  location   Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  ghlAgentId  String @map("ghl_agent_id") @db.VarChar(128)
+  name        String @db.VarChar(255)
+  model       String @db.VarChar(128)
+  temperature Decimal @default(0.40) @db.Decimal(3, 2)
+  prompt      String @db.Text
+  tools       Json   @default("[]") @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  transcripts     Transcript[]
+  testCases       GeneratedTestCase[]
+  recommendations Recommendation[]
+
+  @@unique([locationId, ghlAgentId])
+  @@index([locationId])
+  @@map("agents")
+}
+
+model Transcript {
+  id String @id @default(uuid()) @db.Uuid
+
+  agentId String @map("agent_id") @db.Uuid
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  ghlCallId     String   @unique @map("ghl_call_id") @db.VarChar(128)
+  contactId     String?  @map("contact_id") @db.VarChar(128)
+  callStartedAt DateTime @map("call_started_at")
+  summary       String?  @db.Text
+  turns         Json     @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  findings TranscriptFinding[]
+
+  @@index([agentId, callStartedAt(sort: Desc)])
+  @@map("transcripts")
+}
+
+model TranscriptFinding {
+  id String @id @default(uuid()) @db.Uuid
+
+  transcriptId String     @map("transcript_id") @db.Uuid
+  transcript   Transcript @relation(fields: [transcriptId], references: [id], onDelete: Cascade)
+
+  category           String          @db.VarChar(64)
+  severity           FindingSeverity
+  evidence           String          @db.Text
+  recommendationHint String          @map("recommendation_hint") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([transcriptId])
+  @@index([category, severity])
+  @@map("transcript_findings")
+}
+
+model GeneratedTestCase {
+  id String @id @default(uuid()) @db.Uuid
+
+  agentId String @map("agent_id") @db.Uuid
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  title           String       @db.VarChar(255)
+  scenario        String       @db.Text
+  pathType        TestPathType @map("path_type")
+  successCriteria Json         @map("success_criteria") @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([agentId, pathType])
+  @@map("generated_test_cases")
+}
+
+model Recommendation {
+  id String @id @default(uuid()) @db.Uuid
+
+  agentId String @map("agent_id") @db.Uuid
+  agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  target      RecommendationTarget
+  status      RecommendationStatus @default(PROPOSED)
+  title       String               @db.VarChar(255)
+  beforeValue String               @map("before_value") @db.Text
+  afterValue  String               @map("after_value") @db.Text
+  reasoning   String               @db.Text
+  evidenceIds Json                 @default("[]") @map("evidence_ids") @db.JsonB
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([agentId, status])
+  @@index([target])
+  @@map("recommendations")
+}

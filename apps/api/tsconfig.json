@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "outDir": "dist",
+    "rootDir": ".",
+    "sourceMap": true,
+    "types": ["node", "vitest/globals"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "prisma.config.ts",
+    "prisma/**/*.ts",
+    "vitest.config.ts",
+    "vitest.config.e2e.ts",
+  ],
+}

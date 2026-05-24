@@ -1,0 +1,39 @@
+{
+  "name": "@agent-optimizer/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/main.ts",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "NODE_ENV=test DATABASE_URL=postgresql://optimizer:optimizer@localhost:55432/agent_optimizer?schema=public vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:generate": "prisma generate --schema prisma/schema.prisma",
+    "db:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
+    "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@agent-optimizer/contracts": "workspace:*",
+    "@nestjs/common": "^11.1.8",
+    "@nestjs/config": "^4.0.2",
+    "@nestjs/core": "^11.1.8",
+    "@nestjs/platform-express": "^11.1.8",
+    "@prisma/client": "^6.19.0",
+    "helmet": "^8.1.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^11.1.8",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.10.1",
+    "@types/supertest": "^6.0.3",
+    "prisma": "^6.19.0",
+    "supertest": "^7.1.4",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  }
+}
