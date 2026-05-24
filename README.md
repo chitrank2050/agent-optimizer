@@ -40,6 +40,7 @@ pnpm dev
 Default local URLs:
 
 - API health: `http://localhost:3000/api/v1/health`
+- API docs: `http://localhost:3000/api/docs`
 - Web app: `http://localhost:5173`
 
 ## Phase 1 Status
@@ -49,17 +50,26 @@ Functional:
 - Turborepo workspace with `api`, `web`, and `contracts`
 - Shared contract package with health, HighLevel context, transcript, test case, and recommendation schemas
 - NestJS API with env validation, correlation IDs, Prisma lifecycle wiring, and `/api/v1/health`
+- Swagger/OpenAPI documentation for owned API responses at `/api/docs`
 - Vue/Vite dashboard shell with API health check
 - PostgreSQL Docker Compose service with health checks and resource limits
 - GitHub Actions CI for install, generate, typecheck, test, and build
+- HighLevel Voice AI sync endpoint for location, agent config/actions, call logs, and transcript-like call payloads
 
 Not implemented yet:
 
 - HighLevel OAuth/private integration setup
-- Voice AI transcript ingestion
 - AI transcript analysis
 - Test generation
 - Recommendation approval/apply flow
+
+Sandbox findings:
+
+- Location API works with the sandbox location PIT.
+- Voice AI agent listing works with the sandbox location PIT.
+- Voice AI call-log listing works with `pageSize`; the earlier `limit` parameter is rejected.
+- Real phone calls require paid telephony/Stripe, but the agent supports limited web calls for generating call logs.
+- The `FrontDoor AI` template prompt references custom values/contact fields that must exist in the location; the sync endpoint flags those variables for review.
 
 ## Quality Bar
 
