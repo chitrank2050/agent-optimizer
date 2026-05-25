@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { validateEnv } from './config/env';
 import { HealthModule } from './health/health.module';
+import { IntegrationsModule } from './integrations/integrations.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     PrismaModule,
     HealthModule,
+    IntegrationsModule,
   ],
 })
 export class AppModule implements NestModule {

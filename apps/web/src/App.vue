@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import { Activity, Bot, ClipboardCheck, FileText, Lightbulb } from 'lucide-vue-next';
+import {
+  Activity,
+  AlertTriangle,
+  Bot,
+  ClipboardCheck,
+  FileText,
+  Lightbulb,
+  RefreshCw,
+} from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
-import type { HealthResponse } from '@agent-optimizer/contracts';
+import type { HealthResponse, HighLevelSyncResponse } from '@agent-optimizer/contracts';
 
-import { getHealth } from './lib/api';
+import { getHealth, syncHighLevel } from './lib/api';
 
 const health = ref<HealthResponse | null>(null);
 const healthError = ref<string | null>(null);
+const integration = ref<HighLevelSyncResponse | null>(null);
+const integrationError = ref<string | null>(null);
+const isSyncing = ref(false);
+const locationId = import.meta.env.VITE_GHL_LOCATION_ID ?? '';
 
 onMounted(async () => {
   try {
@@ -15,6 +27,25 @@ onMounted(async () => {
     healthError.value = error instanceof Error ? error.message : 'Unable to reach API';
   }
 });
+
+async function runSync(): Promise<void> {
+  if (!locationId) {
+    integrationError.value = 'Set VITE_GHL_LOCATION_ID to sync the sandbox location.';
+    return;
+  }
+
+  isSyncing.value = true;
+  integrationError.value = null;
+
+  try {
+    integration.value = await syncHighLevel(locationId);
+  } catch (error) {
+    integrationError.value =
+      error instanceof Error ? error.message : 'Unable to sync HighLevel data';
+  } finally {
+    isSyncing.value = false;
+  }
+}
 
 const loopCards = [
   {
@@ -76,26 +107,43 @@ const loopCards = [
       <div class="rounded-md border border-[var(--border)] bg-white p-6">
         <div class="flex items-center gap-3">
           <Bot class="h-5 w-5 text-[var(--accent)]" aria-hidden="true" />
-          <h2 class="text-lg font-semibold">Phase 1 Foundation</h2>
+          <h2 class="text-lg font-semibold">Phase 2 HighLevel Sync</h2>
         </div>
         <dl class="mt-6 grid gap-4 sm:grid-cols-2">
           <div>
-            <dt class="text-sm font-medium text-[var(--muted)]">Frontend</dt>
-            <dd class="mt-1 text-sm">Vue 3, Vite, Tailwind CSS</dd>
+            <dt class="text-sm font-medium text-[var(--muted)]">Location</dt>
+            <dd class="mt-1 text-sm">{{ locationId || 'not configured' }}</dd>
           </div>
           <div>
-            <dt class="text-sm font-medium text-[var(--muted)]">Backend</dt>
-            <dd class="mt-1 text-sm">NestJS, Prisma, PostgreSQL</dd>
+            <dt class="text-sm font-medium text-[var(--muted)]">Agents synced</dt>
+            <dd class="mt-1 text-sm">{{ integration?.syncedAgents.length ?? 0 }}</dd>
           </div>
           <div>
-            <dt class="text-sm font-medium text-[var(--muted)]">Contracts</dt>
-            <dd class="mt-1 text-sm">Shared Zod schemas and typed DTOs</dd>
+            <dt class="text-sm font-medium text-[var(--muted)]">Call logs found</dt>
+            <dd class="mt-1 text-sm">{{ integration?.callLogs.length ?? 0 }}</dd>
           </div>
           <div>
-            <dt class="text-sm font-medium text-[var(--muted)]">Integration target</dt>
-            <dd class="mt-1 text-sm">HighLevel Marketplace Custom Page</dd>
+            <dt class="text-sm font-medium text-[var(--muted)]">Transcripts imported</dt>
+            <dd class="mt-1 text-sm">{{ integration?.transcriptImports.imported ?? 0 }}</dd>
           </div>
         </dl>
+
+        <button
+          class="mt-6 inline-flex items-center gap-2 rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+          type="button"
+          :disabled="isSyncing"
+          @click="runSync"
+        >
+          <RefreshCw class="h-4 w-4" aria-hidden="true" />
+          {{ isSyncing ? 'Syncing' : 'Sync HighLevel' }}
+        </button>
+
+        <p
+          v-if="integrationError"
+          class="mt-4 rounded-md bg-[var(--danger-bg)] px-3 py-2 text-sm text-[var(--danger)]"
+        >
+          {{ integrationError }}
+        </p>
       </div>
 
       <div class="rounded-md border border-[var(--border)] bg-white p-6">
@@ -116,6 +164,51 @@ const loopCards = [
             {{ healthError }}
           </p>
         </div>
+      </div>
+    </section>
+
+    <section
+      v-if="integration"
+      class="mx-auto grid max-w-7xl gap-6 px-6 pb-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-8"
+    >
+      <div class="rounded-md border border-[var(--border)] bg-white p-6">
+        <h2 class="text-lg font-semibold">Synced Agents</h2>
+        <div class="mt-5 space-y-4">
+          <article
+            v-for="agent in integration.syncedAgents"
+            :key="agent.id"
+            class="rounded-md border border-[var(--border)] p-4"
+          >
+            <h3 class="text-sm font-semibold">{{ agent.name }}</h3>
+            <p class="mt-1 text-xs text-[var(--muted)]">HighLevel ID: {{ agent.ghlAgentId }}</p>
+            <dl class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+              <div>
+                <dt class="text-[var(--muted)]">Actions</dt>
+                <dd>{{ agent.actions.length }}</dd>
+              </div>
+              <div>
+                <dt class="text-[var(--muted)]">Prompt variables</dt>
+                <dd>{{ agent.unresolvedVariables.length }}</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </div>
+
+      <div class="rounded-md border border-[var(--border)] bg-white p-6">
+        <div class="flex items-center gap-3">
+          <AlertTriangle class="h-5 w-5 text-[var(--warning)]" aria-hidden="true" />
+          <h2 class="text-lg font-semibold">Integration Notes</h2>
+        </div>
+        <ul class="mt-5 space-y-3 text-sm">
+          <li
+            v-for="warning in integration.warnings"
+            :key="warning"
+            class="rounded-md bg-[var(--warning-bg)] px-3 py-2 text-[var(--warning-ink)]"
+          >
+            {{ warning }}
+          </li>
+        </ul>
       </div>
     </section>
   </main>

@@ -9,6 +9,9 @@
   --accent: #2563eb;
   --danger: #b42318;
   --danger-bg: #fff1f0;
+  --warning: #b54708;
+  --warning-bg: #fffaeb;
+  --warning-ink: #7a2e0e;
   font-family:
     Inter,
     ui-sans-serif,

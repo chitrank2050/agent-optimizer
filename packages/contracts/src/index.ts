@@ -104,3 +104,76 @@ export const recommendationSchema = z.object({
 });
 
 export type OptimizationRecommendation = z.infer<typeof recommendationSchema>;
+
+export const integrationSourceSchema = z.enum(['highlevel', 'seeded', 'manual']);
+
+export type IntegrationSource = z.infer<typeof integrationSourceSchema>;
+
+export const highLevelActionSchema = z.object({
+  id: z.string().min(1),
+  actionType: z.string().min(1),
+  name: z.string().min(1),
+  actionParameters: z.record(z.string(), z.unknown()).default({}),
+});
+
+export type HighLevelAction = z.infer<typeof highLevelActionSchema>;
+
+export const syncedAgentSchema = z.object({
+  id: z.string().min(1),
+  ghlAgentId: z.string().min(1),
+  locationId: z.string().min(1),
+  name: z.string().min(1),
+  businessName: z.string().optional(),
+  language: z.string().optional(),
+  voiceId: z.string().optional(),
+  responsiveness: z.number().optional(),
+  maxCallDuration: z.number().optional(),
+  prompt: z.string().min(1),
+  actions: z.array(highLevelActionSchema).default([]),
+  unresolvedVariables: z.array(z.string().min(1)).default([]),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+});
+
+export type SyncedAgent = z.infer<typeof syncedAgentSchema>;
+
+export const callLogSummarySchema = z.object({
+  id: z.string().min(1),
+  agentId: z.string().min(1).optional(),
+  contactId: z.string().min(1).optional(),
+  status: z.string().optional(),
+  startedAt: z.string().datetime().optional(),
+  durationSeconds: z.number().nonnegative().optional(),
+  summary: z.string().optional(),
+  transcriptAvailable: z.boolean().default(false),
+});
+
+export type CallLogSummary = z.infer<typeof callLogSummarySchema>;
+
+export const highLevelSyncRequestSchema = z.object({
+  locationId: z.string().min(1),
+});
+
+export type HighLevelSyncRequest = z.infer<typeof highLevelSyncRequestSchema>;
+
+export const highLevelSyncResponseSchema = z.object({
+  locationId: z.string().min(1),
+  tenantId: z.string().min(1),
+  syncedAgents: z.array(syncedAgentSchema),
+  callLogs: z.array(callLogSummarySchema),
+  transcriptImports: z.object({
+    imported: z.number().int().nonnegative(),
+    skipped: z.number().int().nonnegative(),
+    source: integrationSourceSchema,
+  }),
+  warnings: z.array(z.string().min(1)).default([]),
+});
+
+export type HighLevelSyncResponse = z.infer<typeof highLevelSyncResponseSchema>;
+
+export const optimizerDashboardSchema = z.object({
+  health: healthResponseSchema.optional(),
+  integration: highLevelSyncResponseSchema.optional(),
+});
+
+export type OptimizerDashboard = z.infer<typeof optimizerDashboardSchema>;
