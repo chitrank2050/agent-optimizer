@@ -45,6 +45,14 @@ Default local URLs:
 - API docs: `http://localhost:3000/api/docs`
 - Web app: `http://localhost:5173`
 
+## Deliverable Docs
+
+- [HighLevel sandbox installation](docs/highlevel-install.md)
+- [Demo script](docs/demo-script.md)
+- [QA and scope notes](docs/qa-and-scope.md)
+- [Architecture overview](docs/architecture/overview.md)
+- [Development setup](docs/development/setup.md)
+
 ## Current Status
 
 Functional:
