@@ -66,6 +66,8 @@ export const issueCategorySchema = z.enum([
   'knowledge_gap',
 ]);
 
+export type IssueCategory = z.infer<typeof issueCategorySchema>;
+
 export const transcriptFindingSchema = z.object({
   category: issueCategorySchema,
   severity: z.enum(['low', 'medium', 'high']),
@@ -177,3 +179,44 @@ export const optimizerDashboardSchema = z.object({
 });
 
 export type OptimizerDashboard = z.infer<typeof optimizerDashboardSchema>;
+
+export const analysisOutcomeSchema = z.enum(['success', 'failure', 'missed_opportunity']);
+
+export const analysisCriterionSchema = z.object({
+  key: z.string().min(1),
+  label: z.string().min(1),
+});
+
+export type AnalysisCriterion = z.infer<typeof analysisCriterionSchema>;
+
+export const transcriptAnalysisSchema = z.object({
+  transcriptId: z.string().min(1),
+  agentId: z.string().min(1),
+  outcome: analysisOutcomeSchema,
+  score: z.number().min(0).max(100),
+  summary: z.string().min(1),
+  passedCriteria: z.array(analysisCriterionSchema).default([]),
+  missedCriteria: z.array(analysisCriterionSchema).default([]),
+  findings: z.array(transcriptFindingSchema).default([]),
+  analyzedAt: z.string().datetime(),
+});
+
+export type TranscriptAnalysis = z.infer<typeof transcriptAnalysisSchema>;
+
+export const performancePatternSchema = z.object({
+  category: issueCategorySchema,
+  severity: z.enum(['low', 'medium', 'high']),
+  count: z.number().int().nonnegative(),
+  exampleEvidence: z.string().min(1),
+});
+
+export type PerformancePattern = z.infer<typeof performancePatternSchema>;
+
+export const analysisBatchSchema = z.object({
+  agentId: z.string().min(1),
+  analyses: z.array(transcriptAnalysisSchema),
+  patterns: z.array(performancePatternSchema),
+  generatedAt: z.string().datetime(),
+});
+
+export type AnalysisBatch = z.infer<typeof analysisBatchSchema>;
