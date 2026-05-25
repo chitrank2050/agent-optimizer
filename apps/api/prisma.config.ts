@@ -5,10 +5,11 @@
  * declares the provider; migrations and generate read DATABASE_URL here.
  */
 import { config } from 'dotenv';
+import { resolve } from 'path';
 import { defineConfig } from 'prisma/config';
 
-config({ path: '../../.env' });
-config();
+// Resolve the root .env file relative to this configuration file
+config({ path: resolve(__dirname, '../../.env') });
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',
