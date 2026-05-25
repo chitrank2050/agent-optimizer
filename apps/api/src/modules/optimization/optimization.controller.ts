@@ -1,3 +1,9 @@
+/**
+ * OptimizationController - HTTP boundary for the optimizer loop.
+ *
+ * Exposes endpoints to generate test cases, evaluate current agent config, and
+ * read proposed recommendations with before/after reasoning.
+ */
 import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { OptimizationRun } from '@agent-optimizer/contracts';

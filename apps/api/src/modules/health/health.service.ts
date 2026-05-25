@@ -1,3 +1,9 @@
+/**
+ * HealthService - Builds API/database readiness responses.
+ *
+ * Uses a lightweight Prisma query to verify PostgreSQL is reachable without
+ * depending on any application table data.
+ */
 import { Inject, Injectable } from '@nestjs/common';
 import type { HealthResponse } from '@agent-optimizer/contracts';
 

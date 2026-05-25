@@ -1,15 +1,15 @@
+/**
+ * ConfigModule - Global Nest configuration wrapper.
+ *
+ * Loads the root monorepo `.env` file and validates the environment at boot
+ * before any provider can open a database or HighLevel connection.
+ */
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { resolve } from 'path';
 
 import { validate } from './env.validation';
 
-/**
- * Global application configuration.
- *
- * The monorepo keeps a single root `.env`; this module resolves it explicitly so
- * the API behaves the same whether commands run from the repo root or app folder.
- */
 @Module({
   imports: [
     NestConfigModule.forRoot({

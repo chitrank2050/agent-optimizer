@@ -1,3 +1,10 @@
+/**
+ * HighLevelSyncService - Imports sandbox location data into local storage.
+ *
+ * Syncs the HighLevel location, Voice AI agents, prompt/action configuration,
+ * call-log summaries, and transcript-like payloads inside a tenant/location
+ * scoped transaction.
+ */
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {

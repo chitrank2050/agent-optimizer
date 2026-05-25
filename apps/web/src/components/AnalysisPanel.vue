@@ -1,3 +1,9 @@
+<!--
+  AnalysisPanel - Transcript analysis dashboard section.
+
+  Shows per-agent scores, failure counts, recurring patterns, and missed
+  criteria after the backend analysis loop runs.
+-->
 <script setup lang="ts">
 import { BarChart3 } from 'lucide-vue-next';
 import type {

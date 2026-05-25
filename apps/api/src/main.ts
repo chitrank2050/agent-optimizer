@@ -1,3 +1,9 @@
+/**
+ * API bootstrap entry point.
+ *
+ * Creates the NestJS application, applies security/CORS/global prefix settings,
+ * publishes Swagger docs, and enables graceful Prisma shutdown hooks.
+ */
 import 'reflect-metadata';
 
 import { NestFactory } from '@nestjs/core';

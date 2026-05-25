@@ -1,3 +1,9 @@
+/**
+ * AnalysisService - Runs and persists transcript analysis for an agent.
+ *
+ * Loads agent configuration and transcripts, delegates deterministic scoring to
+ * the AI package, then stores replaceable analysis/finding records atomically.
+ */
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AnalysisOutcome, FindingSeverity, Prisma } from '@prisma/client';
 import { aggregateAnalysisPatterns, analyzeTranscript } from '@agent-optimizer/ai';

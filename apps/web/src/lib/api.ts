@@ -1,3 +1,9 @@
+/**
+ * API client for the embedded dashboard.
+ *
+ * Wraps backend fetch calls, attaches correlation IDs, and validates responses
+ * with shared contracts before UI state consumes them.
+ */
 import {
   analysisBatchSchema,
   healthResponseSchema,

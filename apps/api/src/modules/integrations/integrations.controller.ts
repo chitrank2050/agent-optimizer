@@ -1,3 +1,9 @@
+/**
+ * IntegrationsController - HTTP boundary for HighLevel synchronization.
+ *
+ * Provides the dashboard action that pulls current Voice AI agent configuration
+ * and available call history from the sandbox account.
+ */
 import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { HighLevelSyncResponse } from '@agent-optimizer/contracts';

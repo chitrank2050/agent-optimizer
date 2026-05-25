@@ -1,3 +1,9 @@
+/**
+ * HighLevelClientService - Typed LeadConnector API client.
+ *
+ * Centralizes HighLevel base URL, API version, private integration token,
+ * timeout behavior, and runtime validation of vendor response payloads.
+ */
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 

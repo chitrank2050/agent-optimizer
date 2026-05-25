@@ -1,3 +1,9 @@
+/**
+ * AppModule - Root NestJS module for the Agent Optimizer API.
+ *
+ * Registers global infrastructure first, then feature modules for health,
+ * HighLevel synchronization, transcript analysis, and optimization workflows.
+ */
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
 import { AnalysisModule } from './modules/analysis/analysis.module';

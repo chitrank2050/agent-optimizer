@@ -1,3 +1,9 @@
+/**
+ * Environment validation for the API process.
+ *
+ * Uses class-validator/class-transformer to fail fast when required root `.env`
+ * values are missing or malformed.
+ */
 import { plainToInstance } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, IsUrl, Min, validateSync } from 'class-validator';
 

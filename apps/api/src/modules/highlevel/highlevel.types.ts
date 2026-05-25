@@ -1,7 +1,11 @@
+/**
+ * Runtime schemas for HighLevel vendor payloads.
+ *
+ * HighLevel responses arrive as untrusted JSON; these Zod schemas validate the
+ * subset the optimizer reads before data is mapped into local persistence.
+ */
 import { z } from 'zod';
 
-// HighLevel is an external boundary. These schemas validate the runtime payloads
-// returned by LeadConnector before the app trusts or persists them.
 export const highLevelLocationSchema = z.object({
   id: z.string().min(1),
   companyId: z.string().min(1),

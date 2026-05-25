@@ -1,3 +1,9 @@
+<!--
+  DashboardHero - Top summary and API status section.
+
+  Frames the three optimizer loops and surfaces whether the backend is reachable
+  before the user starts syncing HighLevel data.
+-->
 <script setup lang="ts">
 import { Activity, ClipboardCheck, FileText, Lightbulb } from 'lucide-vue-next';
 import type { Component } from 'vue';

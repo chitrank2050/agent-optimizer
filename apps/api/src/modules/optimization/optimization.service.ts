@@ -1,3 +1,9 @@
+/**
+ * OptimizationService - Closes the transcript-to-recommendation loop.
+ *
+ * Reruns analysis, generates test cases, evaluates the current prompt/config,
+ * and persists proposed recommendations with evidence IDs in one transaction.
+ */
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   Prisma,

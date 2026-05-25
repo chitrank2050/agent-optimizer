@@ -1,3 +1,9 @@
+/**
+ * CorrelationIdMiddleware - Attaches a trace ID to every request.
+ *
+ * Respects an incoming `x-correlation-id` header when provided, otherwise
+ * generates one and mirrors it back on the response for debugging/demo traces.
+ */
 import { randomUUID } from 'node:crypto';
 
 import { Injectable, NestMiddleware } from '@nestjs/common';

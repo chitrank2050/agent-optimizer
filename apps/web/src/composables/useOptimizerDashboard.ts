@@ -1,3 +1,9 @@
+/**
+ * useOptimizerDashboard - Orchestrates dashboard API state.
+ *
+ * Owns health checks, HighLevel sync, transcript analysis, and optimization run
+ * state so Vue components remain focused on rendering and events.
+ */
 import { onMounted, ref } from 'vue';
 import type {
   AnalysisBatch,

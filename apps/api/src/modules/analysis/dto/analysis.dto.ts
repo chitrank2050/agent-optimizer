@@ -1,5 +1,8 @@
 /**
  * DTOs for transcript analysis endpoints.
+ *
+ * These classes document the owned API response shape for Swagger while shared
+ * runtime contracts remain in `packages/contracts`.
  */
 import { ApiProperty } from '@nestjs/swagger';
 

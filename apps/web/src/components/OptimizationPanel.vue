@@ -1,3 +1,9 @@
+<!--
+  OptimizationPanel - Generated tests and recommendations section.
+
+  Presents optimizer outputs: happy-path/edge-case scenarios, evaluation scores,
+  failed criteria, and before/after recommendation reasoning.
+-->
 <script setup lang="ts">
 import { Lightbulb } from 'lucide-vue-next';
 import type {

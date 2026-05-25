@@ -1,5 +1,8 @@
 /**
  * DTOs for optimization loop endpoints.
+ *
+ * These classes describe generated tests, evaluations, and recommendations for
+ * Swagger while preserving shared runtime contracts in `packages/contracts`.
  */
 import { ApiProperty } from '@nestjs/swagger';
 

@@ -1,3 +1,9 @@
+<!--
+  HighLevelSyncPanel - Sandbox sync and readiness section.
+
+  Displays sync counters, location context, backend correlation ID, and database
+  readiness while exposing the primary HighLevel sync action.
+-->
 <script setup lang="ts">
 import { Bot, RefreshCw } from 'lucide-vue-next';
 import type { HealthResponse, HighLevelSyncResponse } from '@agent-optimizer/contracts';

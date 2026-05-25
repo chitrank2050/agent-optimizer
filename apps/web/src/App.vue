@@ -1,3 +1,9 @@
+<!--
+  App.vue - Dashboard composition root.
+
+  Keeps layout orchestration thin by delegating state to useOptimizerDashboard
+  and rendering focused dashboard section components.
+-->
 <script setup lang="ts">
 import AnalysisPanel from './components/AnalysisPanel.vue';
 import DashboardHero from './components/DashboardHero.vue';

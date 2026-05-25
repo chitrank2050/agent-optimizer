@@ -1,3 +1,9 @@
+/**
+ * PrismaService - Injectable Prisma 7 client with lifecycle hooks.
+ *
+ * Uses the PostgreSQL driver adapter required by Prisma 7 and shuts down the
+ * Nest application when Prisma emits a before-exit signal.
+ */
 import { INestApplication, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';

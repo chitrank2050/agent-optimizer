@@ -1,3 +1,9 @@
+/**
+ * AnalysisController - HTTP boundary for transcript analysis.
+ *
+ * Exposes endpoints to run analysis for an agent and read the persisted latest
+ * findings, scores, missed criteria, and recurring failure patterns.
+ */
 import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { AnalysisBatch } from '@agent-optimizer/contracts';
