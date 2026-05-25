@@ -27,6 +27,7 @@ The intended HighLevel integration path is a Marketplace Custom Page rendered in
 | Contracts | Zod                         | Runtime validation plus shared TypeScript types                               |
 | AI Core   | TypeScript package          | Pure analysis logic that can run deterministically or behind an LLM adapter   |
 | Database  | PostgreSQL + Prisma         | Durable storage for agents, transcripts, findings, tests, and recommendations |
+| Tests     | Vitest + SWC, Playwright    | Fast TS unit/integration transforms and real browser dashboard coverage       |
 
 ## Quick Start
 
@@ -64,6 +65,7 @@ Functional:
 - Vue/Vite dashboard shell with API health check
 - PostgreSQL Docker Compose service with health checks and resource limits
 - GitHub Actions CI for install, generate, typecheck, test, and build
+- Vitest test configs use SWC for fast TypeScript transforms in API and AI package tests
 - HighLevel Voice AI sync endpoint for location, agent config/actions, call logs, and transcript-like call payloads
 - Transcript analysis contracts, deterministic analyzer core, recurring pattern aggregation, and focused tests
 - Persisted transcript analysis results with normalized findings and `POST /api/v1/analysis/agents/:agentId/run`

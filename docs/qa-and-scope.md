@@ -3,6 +3,7 @@
 ## Functional
 
 - Monorepo foundation with NestJS API, Vue 3/Vite web app, shared contracts, Prisma, and PostgreSQL.
+- Vitest unit/integration tests configured with SWC transforms for the API and AI package.
 - API health endpoint with correlation IDs.
 - Swagger documentation for owned API responses.
 - HighLevel sandbox sync for:
