@@ -1,6 +1,8 @@
 import {
+  analysisBatchSchema,
   healthResponseSchema,
   highLevelSyncResponseSchema,
+  type AnalysisBatch,
   type HealthResponse,
   type HighLevelSyncResponse,
 } from '@agent-optimizer/contracts';
@@ -36,4 +38,19 @@ export async function syncHighLevel(locationId: string): Promise<HighLevelSyncRe
   }
 
   return highLevelSyncResponseSchema.parse(await response.json());
+}
+
+export async function runAgentAnalysis(agentId: string): Promise<AnalysisBatch> {
+  const response = await fetch(`${apiBaseUrl}/analysis/agents/${agentId}/run`, {
+    method: 'POST',
+    headers: {
+      'x-correlation-id': crypto.randomUUID(),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Analysis failed with status ${response.status}`);
+  }
+
+  return analysisBatchSchema.parse(await response.json());
 }
