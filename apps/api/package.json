@@ -9,9 +9,9 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "test": "NODE_ENV=test DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "db:generate": "prisma generate --schema prisma/schema.prisma",
-    "db:migrate:dev": "prisma migrate dev --schema prisma/schema.prisma",
-    "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma"
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@agent-optimizer/ai": "workspace:*",
@@ -21,8 +21,10 @@
     "@nestjs/core": "^11.1.8",
     "@nestjs/platform-express": "^11.1.8",
     "@nestjs/swagger": "^11.4.4",
-    "@prisma/client": "^6.19.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "helmet": "^8.1.0",
+    "pg": "^8.21.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
     "zod": "^4.1.13"
@@ -31,8 +33,10 @@
     "@nestjs/testing": "^11.1.8",
     "@types/express": "^5.0.3",
     "@types/node": "^24.10.1",
+    "@types/pg": "^8.20.0",
     "@types/supertest": "^6.0.3",
-    "prisma": "^6.19.0",
+    "dotenv": "^17.4.2",
+    "prisma": "^7.8.0",
     "supertest": "^7.1.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",

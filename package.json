@@ -39,7 +39,7 @@
     "db:generate": "pnpm --filter @agent-optimizer/api db:generate",
     "// --- ⚙️ Maintenance ---": "",
     "setup": "pnpm install && pnpm db:generate && pnpm --filter @agent-optimizer/api db:migrate:deploy",
-    "db:reset:dev": "pnpm --filter @agent-optimizer/api exec prisma migrate reset --schema prisma/schema.prisma",
+    "db:reset:dev": "pnpm --filter @agent-optimizer/api exec prisma migrate reset",
     "deps:update": "pnpm update --interactive --latest"
   },
   "devDependencies": {

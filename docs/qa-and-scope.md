@@ -53,7 +53,7 @@ pnpm typecheck
 pnpm test
 pnpm build
 pnpm lint
-DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public pnpm --filter @agent-optimizer/api exec prisma validate --schema prisma/schema.prisma
+DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public pnpm --filter @agent-optimizer/api exec prisma validate
 ```
 
 ## Manual Review Checklist
