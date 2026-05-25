@@ -14,6 +14,7 @@
     "db:migrate:deploy": "prisma migrate deploy --schema prisma/schema.prisma"
   },
   "dependencies": {
+    "@agent-optimizer/ai": "workspace:*",
     "@agent-optimizer/contracts": "workspace:*",
     "@nestjs/common": "^11.1.8",
     "@nestjs/config": "^4.0.2",

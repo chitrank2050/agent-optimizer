@@ -26,6 +26,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@agent-optimizer/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@agent-optimizer/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

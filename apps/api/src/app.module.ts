@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { AnalysisModule } from './analysis/analysis.module';
 import { CorrelationIdMiddleware } from './common/middleware/correlation-id.middleware';
 import { validateEnv } from './config/env';
 import { HealthModule } from './health/health.module';
@@ -16,6 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     HealthModule,
     IntegrationsModule,
+    AnalysisModule,
   ],
 })
 export class AppModule implements NestModule {

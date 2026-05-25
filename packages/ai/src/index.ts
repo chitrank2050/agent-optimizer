@@ -125,9 +125,44 @@ export function analyzeTranscriptBatch(
   return {
     agentId: agent.agentId,
     analyses,
-    patterns: aggregatePatterns(analyses),
+    patterns: aggregateAnalysisPatterns(analyses),
     generatedAt: new Date().toISOString(),
   };
+}
+
+export function aggregateAnalysisPatterns(
+  analyses: TranscriptAnalysis[],
+): AnalysisBatch['patterns'] {
+  const grouped = new Map<
+    string,
+    {
+      category: IssueCategory;
+      severity: 'low' | 'medium' | 'high';
+      count: number;
+      exampleEvidence: string;
+    }
+  >();
+
+  for (const analysis of analyses) {
+    for (const finding of analysis.findings) {
+      const key = `${finding.category}:${finding.severity}`;
+      const existing = grouped.get(key);
+
+      if (existing) {
+        existing.count += 1;
+        continue;
+      }
+
+      grouped.set(key, {
+        category: finding.category,
+        severity: finding.severity,
+        count: 1,
+        exampleEvidence: finding.evidence,
+      });
+    }
+  }
+
+  return [...grouped.values()].sort((left, right) => right.count - left.count);
 }
 
 function evaluateContactInfo(
@@ -312,39 +347,6 @@ function evaluatePromptConfiguration(prompt: string, findings: TranscriptFinding
       'The prompt references HighLevel variables that must exist in the location configuration.',
     recommendationHint: 'Audit custom values/contact fields before running live calls.',
   });
-}
-
-function aggregatePatterns(analyses: TranscriptAnalysis[]): AnalysisBatch['patterns'] {
-  const grouped = new Map<
-    string,
-    {
-      category: IssueCategory;
-      severity: 'low' | 'medium' | 'high';
-      count: number;
-      exampleEvidence: string;
-    }
-  >();
-
-  for (const analysis of analyses) {
-    for (const finding of analysis.findings) {
-      const key = `${finding.category}:${finding.severity}`;
-      const existing = grouped.get(key);
-
-      if (existing) {
-        existing.count += 1;
-        continue;
-      }
-
-      grouped.set(key, {
-        category: finding.category,
-        severity: finding.severity,
-        count: 1,
-        exampleEvidence: finding.evidence,
-      });
-    }
-  }
-
-  return [...grouped.values()].sort((left, right) => right.count - left.count);
 }
 
 function summarize(outcome: TranscriptAnalysis['outcome'], findings: TranscriptFinding[]): string {
