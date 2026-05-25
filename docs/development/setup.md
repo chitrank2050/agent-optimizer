@@ -35,7 +35,7 @@ Default local URLs:
 
 ## Environment Notes
 
-`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional while Phase 3 uses the deterministic analyzer core.
+`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional while Phase 3 and Phase 4 use deterministic analyzer, test-generation, and recommendation logic.
 
 ## HighLevel Sandbox Setup
 
@@ -76,3 +76,23 @@ curl --request GET \
 ```
 
 The Vue dashboard exposes the same flow: sync the HighLevel location, click `Run analysis` on a synced agent, then review recurring issues and missed criteria.
+
+## Optimization Loop
+
+Run the full Phase 4 loop for a stored local agent ID:
+
+```bash
+curl --request POST \
+  --url http://localhost:3000/api/v1/optimization/agents/your_local_agent_id/run \
+  --header 'x-correlation-id: local-optimization-test'
+```
+
+Read persisted generated tests, evaluations, and recommendations without rerunning:
+
+```bash
+curl --request GET \
+  --url http://localhost:3000/api/v1/optimization/agents/your_local_agent_id \
+  --header 'x-correlation-id: local-optimization-read'
+```
+
+The dashboard exposes this through `Run optimizer`. It reruns transcript analysis, generates happy-path and edge-case tests, evaluates the current agent configuration, and proposes changes without applying them to HighLevel.

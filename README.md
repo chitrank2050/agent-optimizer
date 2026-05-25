@@ -2,7 +2,7 @@
 
 Agent Optimizer is a HighLevel Voice AI companion app that turns call history into a repeatable improvement loop: transcript analysis, generated test scenarios, and AI-backed optimization recommendations.
 
-This repository is a Turborepo monorepo for the home task implementation. The current build covers the foundation, HighLevel sandbox sync, and the first optimizer loop: transcript analysis.
+This repository is a Turborepo monorepo for the home task implementation. The current build covers the foundation, HighLevel sandbox sync, transcript analysis, generated tests, test evaluation, and proposed optimization recommendations.
 
 ## Architecture
 
@@ -60,13 +60,16 @@ Functional:
 - Transcript analysis contracts, deterministic analyzer core, recurring pattern aggregation, and focused tests
 - Persisted transcript analysis results with normalized findings and `POST /api/v1/analysis/agents/:agentId/run`
 - Vue dashboard action to run analysis for a synced agent and inspect scores, recurring issues, and missed criteria
+- Deterministic test generation from agent prompt plus transcript failure patterns
+- Test evaluation harness that scores the current prompt/tools against generated success criteria
+- Persisted optimization recommendations with before/after reasoning, evidence IDs, and proposed status
+- Vue dashboard action to run the full optimizer loop and review generated tests, evaluation results, and recommendations
 
 Not implemented yet:
 
 - HighLevel marketplace OAuth and signed user-context verification
-- LLM-backed transcript analysis provider; Phase 3 currently uses the deterministic analyzer against the same structured contract
-- Test generation
-- Recommendation approval/apply flow
+- LLM-backed analyzer/test generator; Phase 4 currently uses deterministic logic against the same structured contracts
+- Recommendation approval/apply flow back into HighLevel `PATCH /voice-ai/agents/:agentId`
 
 Sandbox findings:
 

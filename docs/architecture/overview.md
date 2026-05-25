@@ -47,6 +47,18 @@ Transcript analysis is split into a pure package and an API shell:
 
 The deterministic analyzer is intentional for Phase 3 because it makes tests stable and keeps the contract explicit. A later LLM judge can replace or augment the analyzer as long as it emits the same normalized contract.
 
+## Phase 4 Optimization Loop
+
+The optimization loop builds on persisted analysis results:
+
+- `packages/ai` generates happy-path and edge-case test cases from the agent prompt plus recurring transcript patterns.
+- The evaluator scores the current prompt/tool configuration against each generated test case's success criteria.
+- The recommendation engine creates proposed prompt, temperature, knowledge-base, or guardrail changes linked to transcript IDs and failed test criteria.
+- `apps/api` persists generated tests, latest evaluations, and recommendations behind deterministic external keys so reruns update the current proposal set.
+- `apps/web` exposes `Run optimizer` for each synced agent and shows generated tests, pass/fail/risk evaluations, and before/after recommendation reasoning.
+
+Recommendations remain consent-gated. Phase 4 proposes changes only; applying a prompt/config change to HighLevel is intentionally left for the approval workflow.
+
 ## Data Model
 
 The Prisma schema starts with durable entities that later phases can extend:
@@ -57,7 +69,8 @@ The Prisma schema starts with durable entities that later phases can extend:
 - `Transcript`: call transcript payload and metadata.
 - `TranscriptAnalysis`: persisted outcome, score, criteria, and analysis timestamp for one transcript.
 - `TranscriptFinding`: normalized failures or missed opportunities.
-- `GeneratedTestCase`: generated scenario and success criteria.
+- `GeneratedTestCase`: generated scenario, success criteria, path type, and source pattern.
+- `TestCaseEvaluation`: latest pass/fail/risk result for a generated test.
 - `Recommendation`: proposed optimization with before/after reasoning and evidence.
 
 This avoids rebuilding storage once real transcript ingestion starts.
