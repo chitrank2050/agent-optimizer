@@ -73,11 +73,12 @@ Functional:
 - Persisted optimization recommendations with before/after reasoning, evidence IDs, and proposed status
 - Vue dashboard action to run the full optimizer loop and review generated tests, evaluation results, and recommendations
 
-Not implemented yet:
+Limited or mocked:
 
 - HighLevel marketplace OAuth and signed user-context verification
 - LLM-backed analyzer/test generator; Phase 4 currently uses deterministic logic against the same structured contracts
 - Recommendation approval/apply flow back into HighLevel `PATCH /voice-ai/agents/:agentId`
+- Browser screenshot QA is pending until browser automation is available in the coding environment
 
 Sandbox findings:
 
@@ -90,3 +91,11 @@ Sandbox findings:
 ## Quality Bar
 
 This project follows the same posture as the Meterplex reference: typed boundaries, explicit data model, correlation IDs, local docs, runnable verification, and honest mocked-vs-real notes.
+
+## Team of One Ownership
+
+- Product: kept the workflow focused on the customer loop reviewers care about: transcript evidence, generated tests, scored gaps, and proposed fixes.
+- Design: used one embedded dashboard surface with visible sync, analysis, optimization, loading, error, and empty states.
+- Engineering: kept contracts shared, persistence durable, HighLevel integration isolated, and AI logic deterministic behind replaceable contracts.
+- QA: added focused analyzer tests, full repo verification commands, Prisma validation, and explicit scope notes for sandbox limitations.
+- Communication: documented setup, HighLevel installation, demo flow, and functional-vs-limited behavior in `docs/`.

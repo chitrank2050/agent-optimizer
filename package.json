@@ -38,9 +38,8 @@
     "docker:down": "docker compose down",
     "db:generate": "pnpm --filter @agent-optimizer/api db:generate",
     "// --- ⚙️ Maintenance ---": "",
-    "setup": "pnpm install --force && pnpm run db:generate && pnpm run db:deploy",
-    "db:reset": "pnpm --filter backend run db:migrate reset --force",
-    "nuke": "rm -rf node_modules pnpm-lock.yaml && pnpm install",
+    "setup": "pnpm install && pnpm db:generate && pnpm --filter @agent-optimizer/api db:migrate:deploy",
+    "db:reset:dev": "pnpm --filter @agent-optimizer/api exec prisma migrate reset --schema prisma/schema.prisma",
     "deps:update": "pnpm update --interactive --latest"
   },
   "devDependencies": {
