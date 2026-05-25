@@ -11,8 +11,8 @@ This repository contains the complete implementation: a Vue dashboard embedded t
 
 ```text
 apps/
-  api/        NestJS API, Prisma, health endpoint
-  web/        Vue 3 + Vite embedded dashboard target
+  api/        NestJS modular monolith under src/modules
+  web/        Vue 3 + Vite dashboard with components and composables
 packages/
   ai/         Analyzer core, evaluator contracts, promptable AI boundary
   contracts/  Shared Zod schemas and TypeScript DTOs

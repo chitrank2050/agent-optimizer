@@ -7,7 +7,7 @@ import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import type { AppEnv } from './modules/config';
-import { PrismaService } from './prisma/prisma.service';
+import { PrismaService } from './modules/prisma/prisma.service';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);

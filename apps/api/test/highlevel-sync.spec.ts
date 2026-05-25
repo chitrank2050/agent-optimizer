@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { extractPromptVariables } from '../src/integrations/highlevel-sync.service';
+import { extractPromptVariables } from '../src/modules/integrations/highlevel-sync.service';
 
 describe('extractPromptVariables', () => {
   it('extracts unique HighLevel prompt variables with whitespace normalized', () => {

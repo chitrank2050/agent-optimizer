@@ -23,6 +23,21 @@ flowchart LR
 
 The dashboard runs as an embedded HighLevel surface and delegates all sensitive work to the API. The backend owns HighLevel API calls, transcript persistence, analysis runs, generated test cases, recommendation records, and audit-friendly correlation IDs.
 
+## Code Organization
+
+The API is a modular monolith. Nest feature modules live under `apps/api/src/modules` so each boundary owns its controller, service, DTOs, and provider wiring:
+
+- `config`: root `.env` loading and class-validator boot-time validation.
+- `health`: API and database readiness.
+- `highlevel`: HighLevel client and vendor response parsing.
+- `integrations`: customer-facing HighLevel sync workflow.
+- `analysis`: transcript analysis persistence and API endpoints.
+- `optimization`: generated tests, evaluations, and recommendations.
+- `prisma`: Prisma client lifecycle.
+- `common`: cross-cutting middleware.
+
+The web app keeps `App.vue` as composition only. Dashboard sections live in `apps/web/src/components`, while `apps/web/src/composables/useOptimizerDashboard.ts` owns API orchestration state.
+
 ## HighLevel Integration
 
 The HighLevel adapter uses the sandbox location private integration token to:

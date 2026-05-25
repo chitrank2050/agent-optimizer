@@ -1,7 +1,7 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-import type { AppEnv } from '../modules/config';
+import type { AppEnv } from '../config';
 import {
   highLevelAgentsResponseSchema,
   highLevelCallLogsResponseSchema,
