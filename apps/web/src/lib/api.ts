@@ -2,9 +2,11 @@ import {
   analysisBatchSchema,
   healthResponseSchema,
   highLevelSyncResponseSchema,
+  optimizationRunSchema,
   type AnalysisBatch,
   type HealthResponse,
   type HighLevelSyncResponse,
+  type OptimizationRun,
 } from '@agent-optimizer/contracts';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1';
@@ -53,4 +55,19 @@ export async function runAgentAnalysis(agentId: string): Promise<AnalysisBatch> 
   }
 
   return analysisBatchSchema.parse(await response.json());
+}
+
+export async function runOptimization(agentId: string): Promise<OptimizationRun> {
+  const response = await fetch(`${apiBaseUrl}/optimization/agents/${agentId}/run`, {
+    method: 'POST',
+    headers: {
+      'x-correlation-id': crypto.randomUUID(),
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Optimization failed with status ${response.status}`);
+  }
+
+  return optimizationRunSchema.parse(await response.json());
 }
