@@ -6,7 +6,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
-import type { AppEnv } from './config/env';
+import type { AppEnv } from './modules/config';
 import { PrismaService } from './prisma/prisma.service';
 
 async function bootstrap(): Promise<void> {

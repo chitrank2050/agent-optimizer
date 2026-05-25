@@ -22,15 +22,16 @@ The HighLevel integration path is a Marketplace Custom Page rendered inside High
 
 ## Tech Stack
 
-| Layer     | Choice                      | Reason                                                                        |
-| --------- | --------------------------- | ----------------------------------------------------------------------------- |
-| Monorepo  | Turborepo + pnpm workspaces | Fast local orchestration with explicit package boundaries                     |
-| Backend   | NestJS                      | Modular server structure with clear dependency injection boundaries           |
-| Frontend  | Vue 3 + Vite                | Matches the task brief and does not require SSR                               |
-| Contracts | Zod                         | Runtime validation plus shared TypeScript types                               |
-| AI Core   | TypeScript package          | Pure analysis logic that can run deterministically or behind an LLM adapter   |
-| Database  | PostgreSQL + Prisma         | Durable storage for agents, transcripts, findings, tests, and recommendations |
-| Tests     | Vitest + SWC, Playwright    | Fast TS unit/integration transforms and real browser dashboard coverage       |
+| Layer     | Choice                        | Reason                                                                        |
+| --------- | ----------------------------- | ----------------------------------------------------------------------------- |
+| Monorepo  | Turborepo + pnpm workspaces   | Fast local orchestration with explicit package boundaries                     |
+| Backend   | NestJS                        | Modular server structure with clear dependency injection boundaries           |
+| Frontend  | Vue 3 + Vite                  | Matches the task brief and does not require SSR                               |
+| Contracts | Zod                           | Runtime validation plus shared TypeScript types                               |
+| Config    | Nest Config + class-validator | Root `.env` loading with typed boot-time validation                           |
+| AI Core   | TypeScript package            | Pure analysis logic that can run deterministically or behind an LLM adapter   |
+| Database  | PostgreSQL + Prisma           | Durable storage for agents, transcripts, findings, tests, and recommendations |
+| Tests     | Vitest + SWC, Playwright      | Fast TS unit/integration transforms and real browser dashboard coverage       |
 
 ## Quick Start
 

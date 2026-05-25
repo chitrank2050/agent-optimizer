@@ -35,6 +35,8 @@ Default local URLs:
 
 ## Environment Notes
 
+The monorepo uses one root `.env` file. The API config module resolves that file explicitly and validates it at boot with Nest Config plus `class-validator`.
+
 `DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional because the optimizer ships with deterministic analyzer, test-generation, and recommendation logic.
 
 ## HighLevel Sandbox Setup
