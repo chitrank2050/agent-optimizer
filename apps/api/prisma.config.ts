@@ -4,8 +4,11 @@
  * Prisma 7 moved datasource URLs out of schema.prisma. The schema now only
  * declares the provider; migrations and generate read DATABASE_URL here.
  */
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { defineConfig } from 'prisma/config';
+
+config({ path: '../../.env' });
+config();
 
 export default defineConfig({
   schema: 'prisma/schema.prisma',

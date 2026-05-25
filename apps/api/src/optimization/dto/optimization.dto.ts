@@ -4,19 +4,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GeneratedTestCaseResponseDto {
-  @ApiProperty({ example: '6a8f4ed6-7e6c-4e51-a650-6077c6d76618' })
+  @ApiProperty({ type: String, example: '6a8f4ed6-7e6c-4e51-a650-6077c6d76618' })
   id!: string;
 
-  @ApiProperty({ example: 'Qualified caller books a standard appointment' })
+  @ApiProperty({ type: String, example: 'Qualified caller books a standard appointment' })
   title!: string;
 
   @ApiProperty({
+    type: String,
     example:
       'Caller asks for a covered service, provides name, phone, ZIP, preferred time, budget, and SMS consent.',
   })
   scenario!: string;
 
-  @ApiProperty({ enum: ['happy_path', 'edge_case'], example: 'happy_path' })
+  @ApiProperty({ type: String, enum: ['happy_path', 'edge_case'], example: 'happy_path' })
   pathType!: string;
 
   @ApiProperty({
@@ -25,49 +26,58 @@ export class GeneratedTestCaseResponseDto {
   })
   successCriteria!: string[];
 
-  @ApiProperty({ example: 'qualification', nullable: true, required: false })
+  @ApiProperty({ type: String, example: 'qualification', nullable: true, required: false })
   sourcePattern?: string;
 }
 
 export class TestEvaluationResponseDto {
-  @ApiProperty({ example: '6a8f4ed6-7e6c-4e51-a650-6077c6d76618' })
+  @ApiProperty({ type: String, example: '6a8f4ed6-7e6c-4e51-a650-6077c6d76618' })
   testCaseId!: string;
 
-  @ApiProperty({ enum: ['pass', 'fail', 'risk'], example: 'risk' })
+  @ApiProperty({ type: String, enum: ['pass', 'fail', 'risk'], example: 'risk' })
   status!: string;
 
-  @ApiProperty({ example: 82, minimum: 0, maximum: 100 })
+  @ApiProperty({ type: Number, example: 82, minimum: 0, maximum: 100 })
   score!: number;
 
   @ApiProperty({ type: [String], example: ['Must ask for budget before closing'] })
   failedCriteria!: string[];
 
   @ApiProperty({
+    type: String,
     example: 'The current prompt/configuration misses 1 criterion for this scenario.',
   })
   reasoning!: string;
 }
 
 export class OptimizationRecommendationResponseDto {
-  @ApiProperty({ example: 'c43bc6a8-ef96-4f27-92d5-9405ef44d924' })
+  @ApiProperty({ type: String, example: 'c43bc6a8-ef96-4f27-92d5-9405ef44d924' })
   id!: string;
 
   @ApiProperty({
+    type: String,
     enum: ['prompt', 'temperature', 'model', 'tool', 'action', 'knowledge_base', 'guardrail'],
     example: 'prompt',
   })
   target!: string;
 
-  @ApiProperty({ example: 'Make budget capture a hard gate before closing' })
+  @ApiProperty({ type: String, example: 'Make budget capture a hard gate before closing' })
   title!: string;
 
-  @ApiProperty({ example: 'Budget capture is currently missing or too easy to skip.' })
+  @ApiProperty({
+    type: String,
+    example: 'Budget capture is currently missing or too easy to skip.',
+  })
   before!: string;
 
-  @ApiProperty({ example: 'Before closing or booking, ask one concise budget question.' })
+  @ApiProperty({
+    type: String,
+    example: 'Before closing or booking, ask one concise budget question.',
+  })
   after!: string;
 
   @ApiProperty({
+    type: String,
     example:
       'Generated tests show the current prompt can pass through a booking path without budget capture.',
   })
@@ -76,12 +86,16 @@ export class OptimizationRecommendationResponseDto {
   @ApiProperty({ type: [String], example: ['7f090d7e-74ca-49be-84de-3d74b9163ebe'] })
   evidenceIds!: string[];
 
-  @ApiProperty({ enum: ['proposed', 'approved', 'rejected', 'applied'], example: 'proposed' })
+  @ApiProperty({
+    type: String,
+    enum: ['proposed', 'approved', 'rejected', 'applied'],
+    example: 'proposed',
+  })
   status!: string;
 }
 
 export class OptimizationRunResponseDto {
-  @ApiProperty({ example: '97a5522e-4b85-47d4-a328-62f1dc7128d6' })
+  @ApiProperty({ type: String, example: '97a5522e-4b85-47d4-a328-62f1dc7128d6' })
   agentId!: string;
 
   @ApiProperty({ type: [GeneratedTestCaseResponseDto] })
@@ -93,6 +107,6 @@ export class OptimizationRunResponseDto {
   @ApiProperty({ type: [OptimizationRecommendationResponseDto] })
   recommendations!: OptimizationRecommendationResponseDto[];
 
-  @ApiProperty({ example: '2026-05-25T05:00:00.000Z' })
+  @ApiProperty({ type: String, example: '2026-05-25T05:00:00.000Z' })
   generatedAt!: string;
 }
