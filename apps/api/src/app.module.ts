@@ -6,6 +6,7 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
 import { validateEnv } from './config/env';
 import { HealthModule } from './health/health.module';
 import { IntegrationsModule } from './integrations/integrations.module';
+import { OptimizationModule } from './optimization/optimization.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { PrismaModule } from './prisma/prisma.module';
     HealthModule,
     IntegrationsModule,
     AnalysisModule,
+    OptimizationModule,
   ],
 })
 export class AppModule implements NestModule {

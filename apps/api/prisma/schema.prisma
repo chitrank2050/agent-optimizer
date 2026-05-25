@@ -41,6 +41,14 @@ enum TestPathType {
   @@map("test_path_type")
 }
 
+enum TestEvaluationStatus {
+  PASS
+  FAIL
+  RISK
+
+  @@map("test_evaluation_status")
+}
+
 enum FindingSeverity {
   LOW
   MEDIUM
@@ -182,16 +190,41 @@ model GeneratedTestCase {
   agentId String @map("agent_id") @db.Uuid
   agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
+  externalKey     String       @map("external_key") @db.VarChar(255)
   title           String       @db.VarChar(255)
   scenario        String       @db.Text
   pathType        TestPathType @map("path_type")
   successCriteria Json         @map("success_criteria") @db.JsonB
+  sourcePattern   String?      @map("source_pattern") @db.VarChar(64)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  evaluations TestCaseEvaluation[]
+
+  @@unique([agentId, externalKey])
   @@index([agentId, pathType])
   @@map("generated_test_cases")
+}
+
+model TestCaseEvaluation {
+  id String @id @default(uuid()) @db.Uuid
+
+  testCaseId String            @map("test_case_id") @db.Uuid
+  testCase   GeneratedTestCase @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  status         TestEvaluationStatus
+  score          Int
+  failedCriteria Json                 @default("[]") @map("failed_criteria") @db.JsonB
+  reasoning      String               @db.Text
+  evaluatedAt    DateTime             @map("evaluated_at")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([testCaseId])
+  @@index([status, score])
+  @@map("test_case_evaluations")
 }
 
 model Recommendation {
@@ -200,6 +233,7 @@ model Recommendation {
   agentId String @map("agent_id") @db.Uuid
   agent   Agent  @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
+  externalKey String @map("external_key") @db.VarChar(255)
   target      RecommendationTarget
   status      RecommendationStatus @default(PROPOSED)
   title       String               @db.VarChar(255)
@@ -211,6 +245,7 @@ model Recommendation {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@unique([agentId, externalKey])
   @@index([agentId, status])
   @@index([target])
   @@map("recommendations")
