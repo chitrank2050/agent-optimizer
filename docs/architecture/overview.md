@@ -22,7 +22,7 @@ Vue Web App  --->  NestJS API  --->  PostgreSQL
                  HighLevel + AI APIs
 ```
 
-Phase 1 builds the local web/API/database foundation. Phase 2 adds HighLevel identity and transcript ingestion. Phase 3 and Phase 4 add AI analysis, generated tests, and recommendation workflows.
+Phase 1 builds the local web/API/database foundation. Phase 2 adds HighLevel sandbox sync and transcript ingestion. Phase 3 adds persisted transcript analysis. Phase 4 adds generated tests and recommendation workflows.
 
 ## Phase 2 Integration Path
 
@@ -36,6 +36,17 @@ The HighLevel adapter uses the sandbox location private integration token to:
 
 If a sandbox has no call logs yet, the optimizer still syncs live agent configuration and shows an empty-call-log onboarding state. This matches the sandbox constraint where paid telephony may be required for phone calls, while web calls can be used for short test calls.
 
+## Phase 3 Analysis Loop
+
+Transcript analysis is split into a pure package and an API shell:
+
+- `packages/ai` owns deterministic transcript scoring, missed-criteria detection, and recurring pattern aggregation.
+- `packages/contracts` owns the structured `AnalysisBatch` response contract shared by API and web.
+- `apps/api` loads stored agent config and transcripts, runs the analyzer, persists `TranscriptAnalysis`, replaces normalized `TranscriptFinding` records, and exposes the result.
+- `apps/web` triggers analysis for a synced agent and displays average score, failure count, recurring patterns, and missed criteria per transcript.
+
+The deterministic analyzer is intentional for Phase 3 because it makes tests stable and keeps the contract explicit. A later LLM judge can replace or augment the analyzer as long as it emits the same normalized contract.
+
 ## Data Model
 
 The Prisma schema starts with durable entities that later phases can extend:
@@ -44,6 +55,7 @@ The Prisma schema starts with durable entities that later phases can extend:
 - `Location`: HighLevel sub-account context.
 - `Agent`: Voice AI agent prompt/config snapshot.
 - `Transcript`: call transcript payload and metadata.
+- `TranscriptAnalysis`: persisted outcome, score, criteria, and analysis timestamp for one transcript.
 - `TranscriptFinding`: normalized failures or missed opportunities.
 - `GeneratedTestCase`: generated scenario and success criteria.
 - `Recommendation`: proposed optimization with before/after reasoning and evidence.

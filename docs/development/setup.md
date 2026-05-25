@@ -20,9 +20,11 @@ pnpm dev
 ## Verification
 
 ```bash
+pnpm format:check
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm lint
 ```
 
 Default local URLs:
@@ -33,7 +35,7 @@ Default local URLs:
 
 ## Environment Notes
 
-`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel and AI provider keys are intentionally empty in Phase 1 and should be filled only when Phase 2 and Phase 3 work begins.
+`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional while Phase 3 uses the deterministic analyzer core.
 
 ## HighLevel Sandbox Setup
 
@@ -54,3 +56,23 @@ curl --request POST \
   --header 'content-type: application/json' \
   --data '{"locationId":"your_location_id"}'
 ```
+
+## Transcript Analysis
+
+After syncing a location with agents and call logs, run the Phase 3 analysis loop for a stored local agent ID:
+
+```bash
+curl --request POST \
+  --url http://localhost:3000/api/v1/analysis/agents/your_local_agent_id/run \
+  --header 'x-correlation-id: local-analysis-test'
+```
+
+Read the persisted analysis results without rerunning the analyzer:
+
+```bash
+curl --request GET \
+  --url http://localhost:3000/api/v1/analysis/agents/your_local_agent_id \
+  --header 'x-correlation-id: local-analysis-read'
+```
+
+The Vue dashboard exposes the same flow: sync the HighLevel location, click `Run analysis` on a synced agent, then review recurring issues and missed criteria.
