@@ -3,6 +3,11 @@ import type {
   AnalysisBatch,
   AnalysisCriterion,
   IssueCategory,
+  OptimizationRecommendation,
+  OptimizationRun,
+  OptimizerTestCase,
+  PerformancePattern,
+  TestEvaluation,
   Transcript,
   TranscriptAnalysis,
   TranscriptFinding,
@@ -163,6 +168,436 @@ export function aggregateAnalysisPatterns(
   }
 
   return [...grouped.values()].sort((left, right) => right.count - left.count);
+}
+
+/**
+ * Builds realistic test scenarios from the agent prompt and observed failure patterns.
+ *
+ * Phase 4 keeps generation deterministic so reviewers can inspect the harness and
+ * rerun it without LLM variance. An LLM provider can later enrich the copy while
+ * preserving the same structured `OptimizerTestCase` contract.
+ */
+export function generateTestCases(
+  agent: AgentConfig,
+  analysis: Pick<AnalysisBatch, 'patterns'>,
+): OptimizerTestCase[] {
+  const baseCases: OptimizerTestCase[] = [
+    {
+      id: stableId(agent.agentId, 'happy-booking'),
+      title: 'Qualified caller books a standard appointment',
+      scenario:
+        'Caller asks for a covered service, provides name, phone, ZIP, preferred time, budget, and SMS consent.',
+      pathType: 'happy_path',
+      successCriteria: [
+        criteria.collect_contact_info.label,
+        criteria.capture_service.label,
+        criteria.capture_zip.label,
+        criteria.capture_preferred_time.label,
+        criteria.ask_budget.label,
+        criteria.ask_sms_consent.label,
+        criteria.follow_booking_flow.label,
+        criteria.stay_polite.label,
+      ],
+    },
+    {
+      id: stableId(agent.agentId, 'urgent-earliest-slot'),
+      title: 'Urgent caller needs earliest available slot',
+      scenario:
+        'Caller says the issue is urgent and asks for help today, but only later appointment slots are available.',
+      pathType: 'edge_case',
+      sourcePattern: 'objection_handling',
+      successCriteria: [
+        criteria.handle_urgency.label,
+        criteria.follow_booking_flow.label,
+        'Must clearly state earliest available slot and forward details for faster follow-up',
+      ],
+    },
+    {
+      id: stableId(agent.agentId, 'unsupported-pricing'),
+      title: 'Caller pushes for exact pricing or a guarantee',
+      scenario:
+        'Caller asks for an exact price and a guaranteed outcome before the appointment is booked.',
+      pathType: 'edge_case',
+      sourcePattern: 'policy',
+      successCriteria: [
+        criteria.avoid_unsupported_claims.label,
+        'Must offer the approved pricing boundary or callback instead of inventing a quote',
+      ],
+    },
+  ];
+
+  const patternCases = analysis.patterns.map((pattern) => patternToTestCase(agent, pattern));
+  const unique = new Map<string, OptimizerTestCase>();
+
+  for (const testCase of [...baseCases, ...patternCases]) {
+    unique.set(testCase.id, testCase);
+  }
+
+  return [...unique.values()];
+}
+
+export function evaluateTestCases(
+  agent: AgentConfig,
+  testCases: OptimizerTestCase[],
+): TestEvaluation[] {
+  return testCases.map((testCase) => evaluateTestCase(agent, testCase));
+}
+
+export function recommendOptimizations(
+  agent: AgentConfig,
+  analysis: Pick<AnalysisBatch, 'analyses' | 'patterns'>,
+  evaluations: TestEvaluation[],
+): OptimizationRecommendation[] {
+  const recommendations = new Map<string, OptimizationRecommendation>();
+
+  for (const pattern of analysis.patterns) {
+    const recommendation = recommendationForPattern(agent, pattern, analysis.analyses);
+    recommendations.set(recommendation.id, recommendation);
+  }
+
+  const failedCriteria = new Set(evaluations.flatMap((evaluation) => evaluation.failedCriteria));
+
+  if (failedCriteria.has(criteria.ask_budget.label)) {
+    const recommendation = promptRecommendation(
+      agent,
+      'prompt-budget-required',
+      'Make budget capture a hard gate before closing',
+      'Budget capture is currently missing or too easy for the agent to skip.',
+      `${agent.prompt}\n\nBefore closing or booking, ask one concise budget question and confirm the answer in the final recap.`,
+      'Generated tests show the current prompt can pass through a booking path without an explicit budget capture gate.',
+      ['ask_budget'],
+    );
+    recommendations.set(recommendation.id, recommendation);
+  }
+
+  if (failedCriteria.has(criteria.ask_sms_consent.label)) {
+    const recommendation = promptRecommendation(
+      agent,
+      'prompt-sms-consent-required',
+      'Require explicit SMS consent before sending confirmations',
+      'SMS consent is not strongly enforced in the current prompt.',
+      `${agent.prompt}\n\nOnly send or promise SMS after asking for explicit consent using the configured consent phrase.`,
+      'Generated follow-up tests require consent before confirmation messaging.',
+      ['ask_sms_consent'],
+    );
+    recommendations.set(recommendation.id, recommendation);
+  }
+
+  if (agent.temperature > 0.7) {
+    recommendations.set(stableId(agent.agentId, 'temperature-lower'), {
+      id: stableId(agent.agentId, 'temperature-lower'),
+      target: 'temperature',
+      title: 'Lower temperature for scripted booking compliance',
+      before: String(agent.temperature),
+      after: '0.4',
+      reasoning:
+        'Voice reception flows are procedural. A lower temperature reduces variation around qualification, consent, and booking steps.',
+      evidenceIds: evaluations
+        .filter((evaluation) => evaluation.status !== 'pass')
+        .map((evaluation) => evaluation.testCaseId),
+      status: 'proposed',
+    });
+  }
+
+  return [...recommendations.values()];
+}
+
+export function runOptimizationLoop(agent: AgentConfig, analysis: AnalysisBatch): OptimizationRun {
+  const testCases = generateTestCases(agent, analysis);
+  const evaluations = evaluateTestCases(agent, testCases);
+  const recommendations = recommendOptimizations(agent, analysis, evaluations);
+
+  return {
+    agentId: agent.agentId,
+    testCases,
+    evaluations,
+    recommendations,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+function patternToTestCase(agent: AgentConfig, pattern: PerformancePattern): OptimizerTestCase {
+  switch (pattern.category) {
+    case 'booking_flow':
+      return {
+        id: stableId(agent.agentId, 'pattern-booking-flow'),
+        title: 'Booking flow recovery after a scheduling request',
+        scenario:
+          'Caller directly asks to schedule, gives availability, and expects the agent to offer or confirm an appointment slot.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [
+          criteria.follow_booking_flow.label,
+          'Must invoke or clearly describe the available-slot and booking flow',
+        ],
+      };
+    case 'qualification':
+      return {
+        id: stableId(agent.agentId, 'pattern-qualification'),
+        title: 'Complete qualification before close',
+        scenario:
+          'Caller is ready to book but answers in fragments, requiring the agent to collect missing service, ZIP, time, budget, and callback details one question at a time.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [
+          criteria.collect_contact_info.label,
+          criteria.capture_service.label,
+          criteria.capture_zip.label,
+          criteria.capture_preferred_time.label,
+          criteria.ask_budget.label,
+        ],
+      };
+    case 'follow_up':
+      return {
+        id: stableId(agent.agentId, 'pattern-follow-up'),
+        title: 'SMS follow-up with consent',
+        scenario:
+          'Caller asks for a text confirmation after booking but has not yet granted SMS permission.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [
+          criteria.ask_sms_consent.label,
+          'Must avoid promising or sending SMS until consent is captured',
+        ],
+      };
+    case 'policy':
+      return {
+        id: stableId(agent.agentId, 'pattern-policy'),
+        title: 'Policy boundary under caller pressure',
+        scenario:
+          'Caller asks the agent to diagnose the issue and guarantee a fixed price before the appointment.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [criteria.avoid_unsupported_claims.label],
+      };
+    case 'tone':
+      return {
+        id: stableId(agent.agentId, 'pattern-tone'),
+        title: 'Polite interruption handling',
+        scenario:
+          'Caller interrupts twice and changes details mid-call while the agent still needs to keep the conversation concise.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [criteria.stay_polite.label, 'Must ask one question at a time'],
+      };
+    case 'knowledge_gap':
+      return {
+        id: stableId(agent.agentId, 'pattern-knowledge-gap'),
+        title: 'Missing custom value fallback',
+        scenario:
+          'Caller asks for business hours or covered services while the prompt still contains unresolved HighLevel variables.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [
+          'Must avoid reading raw template variables aloud',
+          'Must offer callback when configured business context is unavailable',
+        ],
+      };
+    case 'objection_handling':
+      return {
+        id: stableId(agent.agentId, 'pattern-objection-handling'),
+        title: 'Urgent caller objection handling',
+        scenario:
+          'Caller objects that the offered slot is too late for an urgent issue and asks what else can be done.',
+        pathType: 'edge_case',
+        sourcePattern: pattern.category,
+        successCriteria: [criteria.handle_urgency.label],
+      };
+  }
+}
+
+function evaluateTestCase(agent: AgentConfig, testCase: OptimizerTestCase): TestEvaluation {
+  const prompt = agent.prompt.toLowerCase();
+  const tools = new Set(agent.tools.map((tool) => tool.toLowerCase()));
+  const failedCriteria = testCase.successCriteria.filter((criterion) => {
+    const normalized = criterion.toLowerCase();
+
+    if (normalized.includes('contact')) {
+      return !/\b(name|phone|email|contact|callback)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('service')) {
+      return !/\b(service|requested|needs?)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('zip') || normalized.includes('service area')) {
+      return !/\b(zip|area|location)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('preferred appointment time')) {
+      return !/\b(preferred time|appointment time|availability|time)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('budget')) {
+      return !/\b(budget|price expectation|price range)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('sms') || normalized.includes('consent')) {
+      return !/\b(sms|text).{0,80}\b(consent|permission|allowed|okay)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('booking') || normalized.includes('slot')) {
+      return (
+        !tools.has('appointment_booking') && !/\b(book|calendar|slot|appointment)\b/i.test(prompt)
+      );
+    }
+
+    if (normalized.includes('urgent') || normalized.includes('earliest')) {
+      return !/\b(urgent|emergency|earliest available|specialist team|sooner)\b/i.test(prompt);
+    }
+
+    if (
+      normalized.includes('unsupported') ||
+      normalized.includes('guarantee') ||
+      normalized.includes('diagnose') ||
+      normalized.includes('quote')
+    ) {
+      return !/\b(do not|don't|avoid|only).{0,80}\b(price|diagnos|guarantee|claim|policy)\b/i.test(
+        prompt,
+      );
+    }
+
+    if (normalized.includes('polite') || normalized.includes('one question')) {
+      return !/\b(friendly|polite|one question|natural|concise)\b/i.test(prompt);
+    }
+
+    if (normalized.includes('raw template')) {
+      return /\{\{\s*[^}]+?\s*\}\}/.test(agent.prompt);
+    }
+
+    return false;
+  });
+
+  const score = Math.max(0, 100 - failedCriteria.length * 18);
+  const status = failedCriteria.length === 0 ? 'pass' : score < 70 ? 'fail' : 'risk';
+
+  return {
+    testCaseId: testCase.id,
+    status,
+    score,
+    failedCriteria,
+    reasoning:
+      failedCriteria.length === 0
+        ? 'The current prompt/configuration covers every success criterion for this generated scenario.'
+        : `The current prompt/configuration misses ${failedCriteria.length} criterion/criteria for this scenario.`,
+  };
+}
+
+function recommendationForPattern(
+  agent: AgentConfig,
+  pattern: PerformancePattern,
+  analyses: TranscriptAnalysis[],
+): OptimizationRecommendation {
+  const evidenceIds = analyses
+    .filter((analysis) =>
+      analysis.findings.some(
+        (finding) => finding.category === pattern.category && finding.severity === pattern.severity,
+      ),
+    )
+    .map((analysis) => analysis.transcriptId);
+
+  switch (pattern.category) {
+    case 'booking_flow':
+      return promptRecommendation(
+        agent,
+        'prompt-booking-flow',
+        'Tighten the appointment booking branch',
+        'Booking flow guidance is present but not reliably followed.',
+        `${agent.prompt}\n\nWhen a caller asks to book, reschedule, or qualifies with a high score, offer available slots and confirm the selected appointment before closing.`,
+        'Recurring booking-flow findings show callers requested appointments without a clear slot offer or booking confirmation.',
+        evidenceIds,
+      );
+    case 'qualification':
+      return promptRecommendation(
+        agent,
+        'prompt-qualification-checklist',
+        'Add a required qualification checklist',
+        'Qualification fields are described but not enforced as a close gate.',
+        `${agent.prompt}\n\nBefore ending the call, verify name, callback channel, requested service, ZIP, preferred time, budget, and SMS consent if texting is needed.`,
+        'Transcript findings show repeated missed qualification questions.',
+        evidenceIds,
+      );
+    case 'follow_up':
+      return promptRecommendation(
+        agent,
+        'prompt-follow-up-consent',
+        'Strengthen follow-up consent rules',
+        'Follow-up messaging can happen without a strong consent checkpoint.',
+        `${agent.prompt}\n\nDo not send or promise SMS until the caller explicitly agrees to receive text messages.`,
+        'Follow-up findings show SMS consent was not captured before confirmation language.',
+        evidenceIds,
+      );
+    case 'objection_handling':
+      return promptRecommendation(
+        agent,
+        'prompt-urgency-objection',
+        'Add urgent objection handling language',
+        'Urgent callers need a clear branch for earliest-slot booking and specialist escalation.',
+        `${agent.prompt}\n\nIf a caller says the matter is urgent and earlier slots are unavailable, book the earliest available slot and say their details are being forwarded for a faster callback attempt.`,
+        'Urgency findings show callers were not escalated or given earliest-slot language.',
+        evidenceIds,
+      );
+    case 'policy':
+      return promptRecommendation(
+        agent,
+        'guardrail-policy-boundary',
+        'Reinforce unsupported-claim guardrails',
+        'The prompt boundary should be harder for pricing, diagnoses, guarantees, and policies.',
+        `${agent.prompt}\n\nNever invent exact prices, diagnoses, guarantees, or policies. Use approved knowledge only and offer a callback when details are unavailable.`,
+        'Policy findings show unsupported claims or weak boundary handling.',
+        evidenceIds,
+        'guardrail',
+      );
+    case 'knowledge_gap':
+      return {
+        id: stableId(agent.agentId, 'knowledge-base-config'),
+        target: 'knowledge_base',
+        title: 'Resolve missing HighLevel variables and FAQ context',
+        before: 'Prompt references unresolved HighLevel variables or missing business context.',
+        after:
+          'Create the referenced custom values/contact fields and add business hours, service areas, pricing boundary, and booking FAQ to the knowledge base.',
+        reasoning:
+          'Unresolved variables can leak template syntax into live calls and weaken answers about hours, services, and service areas.',
+        evidenceIds,
+        status: 'proposed',
+      };
+    case 'tone':
+      return promptRecommendation(
+        agent,
+        'prompt-tone-recovery',
+        'Add interruption recovery language',
+        'The prompt needs a concise recovery pattern for interrupted or frustrated callers.',
+        `${agent.prompt}\n\nWhen interrupted, briefly acknowledge the correction, update the captured value, and ask only the next required question.`,
+        'Tone findings show the agent needs stronger guidance for caller interruptions or frustration.',
+        evidenceIds,
+      );
+  }
+}
+
+function promptRecommendation(
+  agent: AgentConfig,
+  key: string,
+  title: string,
+  before: string,
+  after: string,
+  reasoning: string,
+  evidenceIds: string[],
+  target: OptimizationRecommendation['target'] = 'prompt',
+): OptimizationRecommendation {
+  return {
+    id: stableId(agent.agentId, key),
+    target,
+    title,
+    before,
+    after,
+    reasoning,
+    evidenceIds,
+    status: 'proposed',
+  };
+}
+
+function stableId(agentId: string, key: string): string {
+  return `${agentId}:${key}`;
 }
 
 function evaluateContactInfo(

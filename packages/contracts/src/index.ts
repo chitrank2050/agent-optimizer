@@ -83,9 +83,22 @@ export const testCaseSchema = z.object({
   scenario: z.string().min(1),
   pathType: z.enum(['happy_path', 'edge_case']),
   successCriteria: z.array(z.string().min(1)).min(1),
+  sourcePattern: issueCategorySchema.optional(),
 });
 
 export type OptimizerTestCase = z.infer<typeof testCaseSchema>;
+
+export const testEvaluationStatusSchema = z.enum(['pass', 'fail', 'risk']);
+
+export const testEvaluationSchema = z.object({
+  testCaseId: z.string().min(1),
+  status: testEvaluationStatusSchema,
+  score: z.number().min(0).max(100),
+  failedCriteria: z.array(z.string().min(1)).default([]),
+  reasoning: z.string().min(1),
+});
+
+export type TestEvaluation = z.infer<typeof testEvaluationSchema>;
 
 export const recommendationSchema = z.object({
   id: z.string().min(1),
@@ -103,9 +116,20 @@ export const recommendationSchema = z.object({
   after: z.string().min(1),
   reasoning: z.string().min(1),
   evidenceIds: z.array(z.string().min(1)).default([]),
+  status: z.enum(['proposed', 'approved', 'rejected', 'applied']).default('proposed'),
 });
 
 export type OptimizationRecommendation = z.infer<typeof recommendationSchema>;
+
+export const optimizationRunSchema = z.object({
+  agentId: z.string().min(1),
+  testCases: z.array(testCaseSchema),
+  evaluations: z.array(testEvaluationSchema),
+  recommendations: z.array(recommendationSchema),
+  generatedAt: z.string().datetime(),
+});
+
+export type OptimizationRun = z.infer<typeof optimizationRunSchema>;
 
 export const integrationSourceSchema = z.enum(['highlevel', 'seeded', 'manual']);
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AgentConfig, Transcript } from '@agent-optimizer/contracts';
 
-import { analyzeTranscript, analyzeTranscriptBatch } from '../src/index.js';
+import { analyzeTranscript, analyzeTranscriptBatch, runOptimizationLoop } from '../src/index.js';
 
 const agent: AgentConfig = {
   agentId: 'agent-1',
@@ -62,5 +62,70 @@ describe('analyzeTranscript', () => {
     const batch = analyzeTranscriptBatch(agent, transcripts);
 
     expect(batch.patterns[0]?.count).toBeGreaterThan(1);
+  });
+});
+
+describe('runOptimizationLoop', () => {
+  it('generates tests and links recommendations to transcript evidence', () => {
+    const transcript: Transcript = {
+      id: 'call-1',
+      agentId: 'agent-1',
+      callStartedAt: new Date('2026-05-25T05:00:00.000Z').toISOString(),
+      turns: [
+        {
+          speaker: 'caller',
+          text: 'I need to book plumbing repair in 94102 tomorrow. My phone is 415-555-0198.',
+        },
+        {
+          speaker: 'agent',
+          text: 'Thanks for calling. Someone will follow up later.',
+        },
+      ],
+    };
+    const analysis = analyzeTranscriptBatch(agent, [transcript]);
+
+    const result = runOptimizationLoop(agent, analysis);
+
+    expect(result.testCases.some((testCase) => testCase.pathType === 'happy_path')).toBe(true);
+    expect(result.evaluations.length).toBe(result.testCases.length);
+    expect(result.recommendations.map((recommendation) => recommendation.target)).toContain(
+      'prompt',
+    );
+    expect(
+      result.recommendations.flatMap((recommendation) => recommendation.evidenceIds),
+    ).toContain('call-1');
+  });
+
+  it('recommends lowering temperature for procedural voice flows', () => {
+    const highVarianceAgent = {
+      ...agent,
+      temperature: 0.9,
+    };
+    const analysis = analyzeTranscriptBatch(highVarianceAgent, [
+      {
+        id: 'call-1',
+        agentId: 'agent-1',
+        callStartedAt: new Date('2026-05-25T05:00:00.000Z').toISOString(),
+        turns: [
+          {
+            speaker: 'caller',
+            text: 'I need service today in 94102. My phone is 415-555-0198.',
+          },
+          {
+            speaker: 'agent',
+            text: 'Thanks, I can help with that.',
+          },
+        ],
+      },
+    ]);
+
+    const result = runOptimizationLoop(highVarianceAgent, analysis);
+
+    expect(result.recommendations).toContainEqual(
+      expect.objectContaining({
+        target: 'temperature',
+        after: '0.4',
+      }),
+    );
   });
 });
