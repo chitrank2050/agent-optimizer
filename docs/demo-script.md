@@ -44,9 +44,10 @@ Target length: 2-5 minutes.
 
 ## Browser QA Note
 
-Browser screenshot automation was not available in the current coding session. Before final recording, run a browser pass across desktop and mobile widths and verify:
+Browser QA is automated with Playwright:
 
-- no overlapping dashboard text
-- buttons remain usable on narrow screens
-- generated recommendations scroll inside their before/after boxes
-- empty states are visible when no transcripts or optimization runs exist
+```bash
+pnpm test:e2e
+```
+
+The test drives the embedded dashboard through sync, analysis, and optimizer actions on desktop and mobile widths. It also checks for browser console errors, horizontal overflow, zero-size buttons, and saves full-page screenshots to `/tmp/agent-optimizer-desktop.png` and `/tmp/agent-optimizer-mobile.png`.

@@ -72,13 +72,13 @@ Functional:
 - Test evaluation harness that scores the current prompt/tools against generated success criteria
 - Persisted optimization recommendations with before/after reasoning, evidence IDs, and proposed status
 - Vue dashboard action to run the full optimizer loop and review generated tests, evaluation results, and recommendations
+- Playwright dashboard QA across desktop and mobile viewports for the sync, analysis, and optimizer flow
 
 Limited or mocked:
 
 - HighLevel marketplace OAuth and signed user-context verification
 - LLM-backed analyzer/test generator; Phase 4 currently uses deterministic logic against the same structured contracts
 - Recommendation approval/apply flow back into HighLevel `PATCH /voice-ai/agents/:agentId`
-- Browser screenshot QA is pending until browser automation is available in the coding environment
 
 Sandbox findings:
 

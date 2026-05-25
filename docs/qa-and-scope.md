@@ -35,6 +35,7 @@
   - evidence IDs
   - proposed status
 - Vue dashboard for sync, analysis, generated tests, evaluations, and recommendations.
+- Playwright browser QA for the dashboard flow on desktop and mobile viewports.
 
 ## Intentionally Limited
 
@@ -51,6 +52,7 @@
 pnpm format:check
 pnpm typecheck
 pnpm test
+pnpm test:e2e
 pnpm build
 pnpm lint
 DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public pnpm --filter @agent-optimizer/api exec prisma validate
@@ -65,4 +67,4 @@ DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimize
 - Recommendations are proposed, not silently applied.
 - UI has loading, error, and empty states for sync, analysis, and optimization.
 - README and docs state what is functional versus limited.
-- Browser screenshot automation still needs to be run before final demo recording.
+- Browser screenshots render correctly on desktop and mobile without horizontal overflow.
