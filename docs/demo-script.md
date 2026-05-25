@@ -38,7 +38,7 @@ Target length: 2-5 minutes.
 - The optimizer turns transcript review into a repeatable loop.
 - The data model keeps tenant, location, agent, transcript, analysis, tests, evaluations, and recommendations separate.
 - Contracts are shared between API and web, with Zod validation at external/AI boundaries.
-- The current AI loop is deterministic for stable review and tests; an LLM provider can replace the generator/judge while emitting the same contracts.
+- The AI loop is deterministic for stable review and tests; an LLM provider can replace the generator/judge while emitting the same contracts.
 - HighLevel API integration is real for location, Voice AI agents, call logs, and agent config sync.
 - Applying prompt/config changes back to HighLevel is intentionally behind an approval step.
 

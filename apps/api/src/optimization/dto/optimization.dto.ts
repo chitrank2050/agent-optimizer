@@ -1,5 +1,5 @@
 /**
- * DTOs for Phase 4 optimization loop endpoints.
+ * DTOs for optimization loop endpoints.
  */
 import { ApiProperty } from '@nestjs/swagger';
 

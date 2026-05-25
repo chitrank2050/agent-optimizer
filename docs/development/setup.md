@@ -35,11 +35,11 @@ Default local URLs:
 
 ## Environment Notes
 
-`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional while Phase 3 and Phase 4 use deterministic analyzer, test-generation, and recommendation logic.
+`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional because the optimizer ships with deterministic analyzer, test-generation, and recommendation logic.
 
 ## HighLevel Sandbox Setup
 
-Use the sandbox location private integration token for Phase 2:
+Use the sandbox location private integration token:
 
 ```bash
 LOCATION_ID=your_location_id
@@ -59,7 +59,7 @@ curl --request POST \
 
 ## Transcript Analysis
 
-After syncing a location with agents and call logs, run the Phase 3 analysis loop for a stored local agent ID:
+After syncing a location with agents and call logs, run transcript analysis for a stored local agent ID:
 
 ```bash
 curl --request POST \
@@ -79,7 +79,7 @@ The Vue dashboard exposes the same flow: sync the HighLevel location, click `Run
 
 ## Optimization Loop
 
-Run the full Phase 4 loop for a stored local agent ID:
+Run the full optimization loop for a stored local agent ID:
 
 ```bash
 curl --request POST \

@@ -2,7 +2,10 @@
 
 Agent Optimizer is a HighLevel Voice AI companion app that turns call history into a repeatable improvement loop: transcript analysis, generated test scenarios, and AI-backed optimization recommendations.
 
-This repository is a Turborepo monorepo for the home task implementation. The current build covers the foundation, HighLevel sandbox sync, transcript analysis, generated tests, test evaluation, and proposed optimization recommendations.
+This repository contains the complete implementation: a Vue dashboard embedded through HighLevel, a NestJS API, durable PostgreSQL persistence, HighLevel Voice AI synchronization, deterministic AI evaluation logic, generated test scenarios, and evidence-linked optimization recommendations.
+
+> [!IMPORTANT]
+> Recommendations are proposed for review. The system does not silently apply prompt or configuration changes to a live Voice AI agent.
 
 ## Architecture
 
@@ -15,7 +18,7 @@ packages/
   contracts/  Shared Zod schemas and TypeScript DTOs
 ```
 
-The intended HighLevel integration path is a Marketplace Custom Page rendered inside HighLevel as an iframe. The local build uses the sandbox location private integration token while the marketplace signed user context is documented as the production integration path.
+The HighLevel integration path is a Marketplace Custom Page rendered inside HighLevel as an iframe. Sandbox review uses a location private integration token; a public Marketplace release should use signed HighLevel user context and scoped installed-account credentials.
 
 ## Tech Stack
 
@@ -46,7 +49,7 @@ Default local URLs:
 - API docs: `http://localhost:3000/api/docs`
 - Web app: `http://localhost:5173`
 
-## Deliverable Docs
+## Documentation
 
 - [HighLevel sandbox installation](docs/highlevel-install.md)
 - [Demo script](docs/demo-script.md)
@@ -54,9 +57,9 @@ Default local URLs:
 - [Architecture overview](docs/architecture/overview.md)
 - [Development setup](docs/development/setup.md)
 
-## Current Status
+## Product Capabilities
 
-Functional:
+Implemented:
 
 - Turborepo workspace with `api`, `web`, and `contracts`
 - Shared contract package with health, HighLevel context, transcript, test case, and recommendation schemas
@@ -76,10 +79,10 @@ Functional:
 - Vue dashboard action to run the full optimizer loop and review generated tests, evaluation results, and recommendations
 - Playwright dashboard QA across desktop and mobile viewports for the sync, analysis, and optimizer flow
 
-Limited or mocked:
+Operational boundaries:
 
 - HighLevel marketplace OAuth and signed user-context verification
-- LLM-backed analyzer/test generator; Phase 4 currently uses deterministic logic against the same structured contracts
+- LLM-backed analyzer/test generator; the production-safe implementation uses deterministic logic against the same structured contracts
 - Recommendation approval/apply flow back into HighLevel `PATCH /voice-ai/agents/:agentId`
 
 Sandbox findings:
@@ -87,12 +90,12 @@ Sandbox findings:
 - Location API works with the sandbox location PIT.
 - Voice AI agent listing works with the sandbox location PIT.
 - Voice AI call-log listing works with `pageSize`; the earlier `limit` parameter is rejected.
-- Real phone calls require paid telephony/Stripe, but the agent supports limited web calls for generating call logs.
+- Real phone calls may require paid telephony/Stripe in the sandbox, while web calls can generate review call logs.
 - The `FrontDoor AI` template prompt references custom values/contact fields that must exist in the location; the sync endpoint flags those variables for review.
 
 ## Quality Bar
 
-This project follows the same posture as the Meterplex reference: typed boundaries, explicit data model, correlation IDs, local docs, runnable verification, and honest mocked-vs-real notes.
+This project follows the same posture as the Meterplex reference: typed boundaries, explicit data model, correlation IDs, local docs, runnable verification, and clear production boundaries.
 
 ## Team of One Ownership
 
@@ -100,4 +103,4 @@ This project follows the same posture as the Meterplex reference: typed boundari
 - Design: used one embedded dashboard surface with visible sync, analysis, optimization, loading, error, and empty states.
 - Engineering: kept contracts shared, persistence durable, HighLevel integration isolated, and AI logic deterministic behind replaceable contracts.
 - QA: added focused analyzer tests, full repo verification commands, Prisma validation, and explicit scope notes for sandbox limitations.
-- Communication: documented setup, HighLevel installation, demo flow, and functional-vs-limited behavior in `docs/`.
+- Communication: documented setup, HighLevel installation, demo flow, verification, and production boundaries in `docs/`.

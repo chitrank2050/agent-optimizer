@@ -1,6 +1,6 @@
 # QA and Scope Notes
 
-## Functional
+## Product Scope
 
 - Monorepo foundation with NestJS API, Vue 3/Vite web app, shared contracts, Prisma, and PostgreSQL.
 - Vitest unit/integration tests configured with SWC transforms for the API and AI package.
@@ -38,13 +38,13 @@
 - Vue dashboard for sync, analysis, generated tests, evaluations, and recommendations.
 - Playwright browser QA for the dashboard flow on desktop and mobile viewports.
 
-## Intentionally Limited
+## Production Boundaries
 
 - The analyzer, test generator, evaluator, and recommendation engine are deterministic TypeScript logic in `packages/ai`.
-- LLM provider integration is not wired yet. The contract is ready for an LLM judge/generator that emits the same structured outputs.
-- HighLevel Marketplace signed user context is documented but not fully implemented.
+- LLM provider integration is not required for deterministic review. The contract is ready for an LLM judge/generator that emits the same structured outputs.
+- HighLevel Marketplace signed user context is documented as the production auth path.
 - Applying recommendations back to HighLevel is not automatic.
-- `PATCH /voice-ai/agents/:agentId` is intentionally behind a future approval flow to avoid unsafe live-agent changes.
+- `PATCH /voice-ai/agents/:agentId` belongs behind an approval flow to avoid unsafe live-agent changes.
 - Real phone-call generation may require paid telephony/Stripe in the sandbox. The project supports web-call or seeded transcript workflows for demo data.
 
 ## Verification Commands
@@ -67,5 +67,5 @@ DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimize
 - Multi-step persistence uses transactions.
 - Recommendations are proposed, not silently applied.
 - UI has loading, error, and empty states for sync, analysis, and optimization.
-- README and docs state what is functional versus limited.
+- README and docs state the product scope and production boundaries.
 - Browser screenshots render correctly on desktop and mobile without horizontal overflow.

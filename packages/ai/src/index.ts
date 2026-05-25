@@ -71,9 +71,9 @@ const criteria: Record<CriterionKey, AnalysisCriterion> = {
 /**
  * Deterministic transcript analyzer.
  *
- * This is the production fallback for Phase 3: it gives repeatable, testable
- * findings even when an LLM key is absent. Phase 4 can add an LLM judge that
- * emits the same `TranscriptAnalysis` contract.
+ * This gives repeatable, testable findings even when an LLM key is absent.
+ * An LLM judge can replace or augment it as long as it emits the same
+ * `TranscriptAnalysis` contract.
  */
 export function analyzeTranscript(agent: AgentConfig, transcript: Transcript): TranscriptAnalysis {
   const text = transcript.turns.map((turn) => turn.text).join('\n');
@@ -173,9 +173,9 @@ export function aggregateAnalysisPatterns(
 /**
  * Builds realistic test scenarios from the agent prompt and observed failure patterns.
  *
- * Phase 4 keeps generation deterministic so reviewers can inspect the harness and
- * rerun it without LLM variance. An LLM provider can later enrich the copy while
- * preserving the same structured `OptimizerTestCase` contract.
+ * Generation stays deterministic so reviewers can inspect the harness and rerun it
+ * without LLM variance. An LLM provider can enrich the copy while preserving the
+ * same structured `OptimizerTestCase` contract.
  */
 export function generateTestCases(
   agent: AgentConfig,

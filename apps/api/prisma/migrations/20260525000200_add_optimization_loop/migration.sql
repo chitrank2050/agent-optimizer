@@ -1,4 +1,4 @@
--- Phase 4 optimization loop persistence.
+-- Optimization loop persistence.
 -- Generated test cases and recommendations use deterministic external keys so
 -- rerunning the optimizer updates the current proposal set instead of creating
 -- duplicate rows for the same agent.

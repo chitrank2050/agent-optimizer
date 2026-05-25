@@ -12,19 +12,18 @@ Recommendations are proposed first. Applying changes to HighLevel is intentional
 
 ## System Boundaries
 
-```text
-HighLevel Custom Page
-        |
-        v
-Vue Web App  --->  NestJS API  --->  PostgreSQL
-                        |
-                        v
-                 HighLevel + AI APIs
+```mermaid
+flowchart LR
+  customPage["HighLevel Custom Page"] --> web["Vue Dashboard"]
+  web --> api["NestJS API"]
+  api --> db["PostgreSQL"]
+  api --> ghl["HighLevel Voice AI APIs"]
+  api --> ai["AI Evaluation Core"]
 ```
 
-Phase 1 builds the local web/API/database foundation. Phase 2 adds HighLevel sandbox sync and transcript ingestion. Phase 3 adds persisted transcript analysis. Phase 4 adds generated tests and recommendation workflows.
+The dashboard runs as an embedded HighLevel surface and delegates all sensitive work to the API. The backend owns HighLevel API calls, transcript persistence, analysis runs, generated test cases, recommendation records, and audit-friendly correlation IDs.
 
-## Phase 2 Integration Path
+## HighLevel Integration
 
 The HighLevel adapter uses the sandbox location private integration token to:
 
@@ -36,7 +35,7 @@ The HighLevel adapter uses the sandbox location private integration token to:
 
 If a sandbox has no call logs yet, the optimizer still syncs live agent configuration and shows an empty-call-log onboarding state. This matches the sandbox constraint where paid telephony may be required for phone calls, while web calls can be used for short test calls.
 
-## Phase 3 Analysis Loop
+## Transcript Analysis
 
 Transcript analysis is split into a pure package and an API shell:
 
@@ -45,9 +44,9 @@ Transcript analysis is split into a pure package and an API shell:
 - `apps/api` loads stored agent config and transcripts, runs the analyzer, persists `TranscriptAnalysis`, replaces normalized `TranscriptFinding` records, and exposes the result.
 - `apps/web` triggers analysis for a synced agent and displays average score, failure count, recurring patterns, and missed criteria per transcript.
 
-The deterministic analyzer is intentional for Phase 3 because it makes tests stable and keeps the contract explicit. A later LLM judge can replace or augment the analyzer as long as it emits the same normalized contract.
+The deterministic analyzer is intentional because it makes tests stable and keeps the contract explicit. An LLM judge can replace or augment the analyzer as long as it emits the same normalized contract.
 
-## Phase 4 Optimization Loop
+## Optimization Loop
 
 The optimization loop builds on persisted analysis results:
 
@@ -57,11 +56,11 @@ The optimization loop builds on persisted analysis results:
 - `apps/api` persists generated tests, latest evaluations, and recommendations behind deterministic external keys so reruns update the current proposal set.
 - `apps/web` exposes `Run optimizer` for each synced agent and shows generated tests, pass/fail/risk evaluations, and before/after recommendation reasoning.
 
-Recommendations remain consent-gated. Phase 4 proposes changes only; applying a prompt/config change to HighLevel is intentionally left for the approval workflow.
+Recommendations remain consent-gated. The optimizer proposes changes only; applying a prompt/config change to HighLevel belongs behind the approval workflow.
 
 ## Data Model
 
-The Prisma schema starts with durable entities that later phases can extend:
+The Prisma schema uses durable entities for the complete optimizer loop:
 
 - `Tenant`: HighLevel agency/company context.
 - `Location`: HighLevel sub-account context.
@@ -73,4 +72,4 @@ The Prisma schema starts with durable entities that later phases can extend:
 - `TestCaseEvaluation`: latest pass/fail/risk result for a generated test.
 - `Recommendation`: proposed optimization with before/after reasoning and evidence.
 
-This avoids rebuilding storage once real transcript ingestion starts.
+This keeps agent configuration, evidence, evaluation results, and recommendations independently queryable and auditable.

@@ -36,13 +36,13 @@ describe('HealthController', () => {
   it('returns API and database health with a correlation id', async () => {
     const response = await request(app.getHttpServer())
       .get('/api/v1/health')
-      .set('x-correlation-id', 'phase-1-test')
+      .set('x-correlation-id', 'health-test')
       .expect(200);
 
     expect(response.body).toMatchObject({
       status: 'ok',
       service: 'agent-optimizer-api',
-      correlationId: 'phase-1-test',
+      correlationId: 'health-test',
       checks: {
         api: 'ok',
         database: 'ok',

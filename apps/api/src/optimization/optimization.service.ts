@@ -28,7 +28,7 @@ export class OptimizationService {
   ) {}
 
   /**
-   * Closes the Phase 4 loop: rerun transcript analysis, generate tests,
+   * Closes the optimizer loop: rerun transcript analysis, generate tests,
    * evaluate current config, and persist proposed optimizations atomically.
    */
   async run(agentId: string): Promise<OptimizationRun> {

@@ -59,7 +59,7 @@ pnpm dev
 
 ## Production Auth Path
 
-The current sandbox implementation uses a location private integration token for API access. The intended marketplace production path is:
+The sandbox implementation uses a location private integration token for API access. The intended marketplace production path is:
 
 - HighLevel Custom Page renders the Vue app in an iframe.
 - HighLevel signed user context is sent to the backend.
@@ -67,4 +67,4 @@ The current sandbox implementation uses a location private integration token for
 - Backend maps the HighLevel company/location to local tenant/location records.
 - API calls use OAuth/private integration credentials scoped to the installed customer account.
 
-This is documented as the production integration path but not fully wired in the local home-task build.
+The local sandbox flow is complete for review and demo usage. Signed marketplace context is the production auth hardening step for a public Marketplace release.

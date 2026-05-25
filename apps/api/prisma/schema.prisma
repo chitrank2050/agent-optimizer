@@ -1,8 +1,8 @@
 // Agent Optimizer - Prisma Schema
 //
-// Phase 1 defines the durable backbone for the optimizer loop:
+// Durable backbone for the optimizer loop:
 // HighLevel account context -> agents -> transcripts -> findings -> tests -> recommendations.
-// Later phases should extend these tables rather than replacing mocked storage.
+// Extensions should preserve this evidence-first storage model.
 
 generator client {
   provider = "prisma-client-js"

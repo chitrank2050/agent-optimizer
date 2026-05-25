@@ -209,7 +209,7 @@ const loopCards = [
       <div class="rounded-md border border-[var(--border)] bg-white p-6">
         <div class="flex items-center gap-3">
           <Bot class="h-5 w-5 text-[var(--accent)]" aria-hidden="true" />
-          <h2 class="text-lg font-semibold">Phase 2 HighLevel Sync</h2>
+          <h2 class="text-lg font-semibold">HighLevel Sync</h2>
         </div>
         <dl class="mt-6 grid gap-4 sm:grid-cols-2">
           <div>
@@ -253,11 +253,11 @@ const loopCards = [
         <div class="mt-5 space-y-3 text-sm">
           <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
             <span class="text-[var(--muted)]">Correlation ID</span>
-            <span class="font-mono text-xs">{{ health?.correlationId ?? 'pending' }}</span>
+            <span class="font-mono text-xs">{{ health?.correlationId ?? 'not available' }}</span>
           </div>
           <div class="flex items-center justify-between border-b border-[var(--border)] pb-3">
             <span class="text-[var(--muted)]">Database</span>
-            <span>{{ health?.checks.database ?? 'pending' }}</span>
+            <span>{{ health?.checks.database ?? 'checking' }}</span>
           </div>
           <p
             v-if="healthError"
