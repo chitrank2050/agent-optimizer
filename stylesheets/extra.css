@@ -1,0 +1,51 @@
+/* Premium UI overrides for MkDocs Material. */
+
+:root {
+  --md-primary-fg-color: #4338ca;
+  --md-primary-fg-color--light: #6366f1;
+  --md-primary-fg-color--dark: #3730a3;
+}
+
+.md-nav__link {
+  border-radius: 0.25rem;
+  transition:
+    color 0.25s,
+    background-color 0.25s;
+}
+
+.md-nav__link:hover {
+  color: var(--md-primary-fg-color);
+  background-color: rgba(67, 56, 202, 0.05);
+}
+
+.highlight {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+[data-md-color-scheme='slate'] .highlight {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.md-tabs {
+  background-color: var(--md-primary-fg-color);
+}
+
+body {
+  transition:
+    background-color 0.5s,
+    color 0.5s;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.md-content {
+  line-height: 1.65;
+}
