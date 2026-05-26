@@ -1231,11 +1231,11 @@
 </tr>
 <tr>
 <td>Build command</td>
-<td><code>corepack enable &amp;&amp; pnpm install --frozen-lockfile &amp;&amp; pnpm db:generate &amp;&amp; pnpm build</code></td>
+<td><code>corepack enable &amp;&amp; corepack prepare pnpm@11.1.3 --activate &amp;&amp; pnpm install --frozen-lockfile &amp;&amp; pnpm db:generate &amp;&amp; pnpm build:api</code></td>
 </tr>
 <tr>
 <td>Start command</td>
-<td><code>pnpm --filter @agent-optimizer/api db:migrate:deploy &amp;&amp; node apps/api/dist/src/main.js</code></td>
+<td><code>pnpm deploy:api:start</code></td>
 </tr>
 <tr>
 <td>Health check path</td>
@@ -1244,6 +1244,7 @@
 </tbody>
 </table>
 <p>Render provides the public bind port through <code>PORT</code>; do not hardcode <code>API_PORT</code> on Render unless you intentionally need a local override.</p>
+<p>Use the Neon direct connection string for <code>DATABASE_URL</code> during migrations. Avoid the <code>*-pooler.*.neon.tech</code> URL for <code>prisma migrate deploy</code>; pooled URLs are useful for application traffic but can fail or hang during schema migration.</p>
 <p>Add the API environment variables from this guide. After deploy, verify:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/health
 </code></pre></div>
