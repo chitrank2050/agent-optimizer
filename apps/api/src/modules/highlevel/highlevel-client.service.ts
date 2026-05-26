@@ -4,7 +4,7 @@
  * Centralizes HighLevel base URL, API version, private integration token,
  * timeout behavior, and runtime validation of vendor response payloads.
  */
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import type { AppEnv } from '../config';
@@ -40,14 +40,14 @@ export class HighLevelClientService {
   }
 
   /**
-   * Lists Voice AI agents for a sub-account. HighLevel rejects `limit`; the
-   * verified pagination key is `pageSize`.
+   * Lists Voice AI agents for a sub-account. HighLevel rejects `limit` and caps
+   * `pageSize` at 50 for the Voice AI agents endpoint.
    */
   async listAgents(locationId: string): Promise<HighLevelAgent[]> {
     const params = new URLSearchParams({
       locationId,
       page: '1',
-      pageSize: '100',
+      pageSize: '50',
     });
     const payload = await this.request(`/voice-ai/agents?${params.toString()}`);
 
@@ -89,10 +89,14 @@ export class HighLevelClientService {
     const payload = (await response.json().catch(() => ({}))) as unknown;
 
     if (!response.ok) {
-      throw new UnauthorizedException({
-        message: 'HighLevel request failed',
-        statusCode: response.status,
-      });
+      throw new HttpException(
+        {
+          message: 'HighLevel request failed',
+          statusCode: response.status,
+          upstreamMessage: getHighLevelErrorMessage(payload),
+        },
+        response.status,
+      );
     }
 
     return payload;
@@ -105,4 +109,22 @@ export class HighLevelClientService {
 
     return (payload as Record<string, unknown>)[key];
   }
+}
+
+function getHighLevelErrorMessage(payload: unknown): string | string[] | undefined {
+  if (typeof payload !== 'object' || payload === null || !('message' in payload)) {
+    return undefined;
+  }
+
+  const message = (payload as { message?: unknown }).message;
+
+  if (typeof message === 'string') {
+    return message;
+  }
+
+  if (Array.isArray(message) && message.every((entry) => typeof entry === 'string')) {
+    return message;
+  }
+
+  return undefined;
 }
