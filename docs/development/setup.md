@@ -2,6 +2,8 @@
 
 This guide is the local engineering runbook for the optimizer. It covers the root environment file, database setup, verification commands, and API workflows used during development.
 
+For the shortest path, use [Quick Start](quick-start.md). For environment variables, use [Environment Prerequisites](environment.md). For command reference, use [Operational Scripts](scripts.md).
+
 ## Prerequisites
 
 - Node.js 24 or newer
@@ -28,29 +30,7 @@ Default local URLs:
 
 ## Environment Model
 
-The monorepo uses one root `.env` file. The API config module loads that file explicitly and validates it at boot with Nest Config plus `class-validator`. The Vite app also reads from the root env file through `apps/web/vite.config.ts`.
-
-Required local values:
-
-```bash
-DATABASE_URL="postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public"
-GHL_LOCATION_ID=your_location_id
-GHL_LOCATION_PIT=pit-your-location-token
-GHL_API_BASE_URL=https://services.leadconnectorhq.com
-GHL_API_VERSION=2021-07-28
-VITE_API_BASE_URL=http://localhost:3000/api/v1
-VITE_GHL_LOCATION_ID=your_location_id
-```
-
-Optional LLM refinement:
-
-```bash
-LLM_API_KEY=provider-key
-LLM_MODEL=provider-model
-LLM_RESPONSES_URL=https://your-llm-provider.example/v1/responses
-```
-
-`GHL_ACCOUNT_PIT` and `GHL_AGENT_ID` are useful sandbox reference values, but runtime sync uses `GHL_LOCATION_PIT` and the dashboard location ID.
+The monorepo uses one root `.env` file. See [Environment Prerequisites](environment.md) for the full variable table and security notes.
 
 ## Database Commands
 

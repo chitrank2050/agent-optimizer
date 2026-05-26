@@ -71,7 +71,10 @@ nav:
   - Architecture:
       - Overview: architecture/overview.md
   - Setup:
+      - Quick Start: development/quick-start.md
       - Development: development/setup.md
+      - Environment Prerequisites: development/environment.md
+      - Operational Scripts: development/scripts.md
       - HighLevel Sandbox: highlevel-install.md
       - Deployment: deployment.md
   - Demo:
