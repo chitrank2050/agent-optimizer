@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://chitrank2050.github.io/agent-optimizer/development/setup/">
       
       
-        <link rel="prev" href="../../architecture/overview/">
+        <link rel="prev" href="../quick-start/">
       
       
-        <link rel="next" href="../../highlevel-install/">
+        <link rel="next" href="../environment/">
       
       
         
@@ -281,7 +281,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../quick-start/" class="md-tabs__link">
           
   
   
@@ -541,6 +541,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -684,6 +712,62 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scripts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operational Scripts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -1015,7 +1099,7 @@
     
     
       <li class="md-path__item">
-        <a href="./" class="md-path__link">
+        <a href="../quick-start/" class="md-path__link">
           
   <span class="md-ellipsis">
     Setup
@@ -1042,6 +1126,7 @@
 
 <h1 id="development-setup">Development Setup<a class="headerlink" href="#development-setup" title="Permanent link">&para;</a></h1>
 <p>This guide is the local engineering runbook for the optimizer. It covers the root environment file, database setup, verification commands, and API workflows used during development.</p>
+<p>For the shortest path, use <a href="../quick-start/">Quick Start</a>. For environment variables, use <a href="../environment/">Environment Prerequisites</a>. For command reference, use <a href="../scripts/">Operational Scripts</a>.</p>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Node.js 24 or newer</li>
@@ -1064,63 +1149,48 @@
 <li>Web dashboard: <code>http://localhost:5173</code></li>
 </ul>
 <h2 id="environment-model">Environment Model<a class="headerlink" href="#environment-model" title="Permanent link">&para;</a></h2>
-<p>The monorepo uses one root <code>.env</code> file. The API config module loads that file explicitly and validates it at boot with Nest Config plus <code>class-validator</code>. The Vite app also reads from the root env file through <code>apps/web/vite.config.ts</code>.</p>
-<p>Required local values:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nv">DATABASE_URL</span><span class="o">=</span><span class="s2">&quot;postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public&quot;</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">GHL_LOCATION_ID</span><span class="o">=</span>your_location_id
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nv">GHL_LOCATION_PIT</span><span class="o">=</span>pit-your-location-token
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">GHL_API_BASE_URL</span><span class="o">=</span>https://services.leadconnectorhq.com
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nv">GHL_API_VERSION</span><span class="o">=</span><span class="m">2021</span>-07-28
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nv">VITE_API_BASE_URL</span><span class="o">=</span>http://localhost:3000/api/v1
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nv">VITE_GHL_LOCATION_ID</span><span class="o">=</span>your_location_id
-</code></pre></div>
-<p>Optional LLM refinement:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nv">LLM_API_KEY</span><span class="o">=</span>provider-key
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">LLM_MODEL</span><span class="o">=</span>provider-model
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nv">LLM_RESPONSES_URL</span><span class="o">=</span>https://your-llm-provider.example/v1/responses
-</code></pre></div>
-<p><code>GHL_ACCOUNT_PIT</code> and <code>GHL_AGENT_ID</code> are useful sandbox reference values, but runtime sync uses <code>GHL_LOCATION_PIT</code> and the dashboard location ID.</p>
+<p>The monorepo uses one root <code>.env</code> file. See <a href="../environment/">Environment Prerequisites</a> for the full variable table and security notes.</p>
 <h2 id="database-commands">Database Commands<a class="headerlink" href="#database-commands" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pnpm<span class="w"> </span>docker:up
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>pnpm<span class="w"> </span>db:generate
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>pnpm<span class="w"> </span>--filter<span class="w"> </span>@agent-optimizer/api<span class="w"> </span>db:migrate:dev
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema<span class="o">=</span>public<span class="w"> </span>pnpm<span class="w"> </span>--filter<span class="w"> </span>@agent-optimizer/api<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>prisma<span class="w"> </span>validate
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pnpm<span class="w"> </span>docker:up
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>pnpm<span class="w"> </span>db:generate
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pnpm<span class="w"> </span>--filter<span class="w"> </span>@agent-optimizer/api<span class="w"> </span>db:migrate:dev
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema<span class="o">=</span>public<span class="w"> </span>pnpm<span class="w"> </span>--filter<span class="w"> </span>@agent-optimizer/api<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>prisma<span class="w"> </span>validate
 </code></pre></div>
 <p>Prisma 7 reads the datasource URL from <code>apps/api/prisma.config.ts</code>, not from <code>schema.prisma</code>.</p>
 <h2 id="api-workflows">API Workflows<a class="headerlink" href="#api-workflows" title="Permanent link">&para;</a></h2>
 <p>Sync HighLevel location, agents, actions, and call logs:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/integrations/highlevel/sync<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;content-type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span>--data<span class="w"> </span><span class="s1">&#39;{&quot;locationId&quot;:&quot;your_location_id&quot;}&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/integrations/highlevel/sync<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;content-type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span>--data<span class="w"> </span><span class="s1">&#39;{&quot;locationId&quot;:&quot;your_location_id&quot;}&#39;</span>
 </code></pre></div>
 <p>Run transcript analysis:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/analysis/agents/your_local_agent_id/run<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-analysis-test&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/analysis/agents/your_local_agent_id/run<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-analysis-test&#39;</span>
 </code></pre></div>
 <p>Read persisted analysis:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/analysis/agents/your_local_agent_id<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-analysis-read&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/analysis/agents/your_local_agent_id<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-analysis-read&#39;</span>
 </code></pre></div>
 <p>Run optimization:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/optimization/agents/your_local_agent_id/run<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-optimization-test&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/optimization/agents/your_local_agent_id/run<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-optimization-test&#39;</span>
 </code></pre></div>
 <p>Read persisted generated tests, evaluations, and recommendations:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/optimization/agents/your_local_agent_id<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-optimization-read&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>--request<span class="w"> </span>GET<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span>--url<span class="w"> </span>http://localhost:3000/api/v1/optimization/agents/your_local_agent_id<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;x-correlation-id: local-optimization-read&#39;</span>
 </code></pre></div>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pnpm<span class="w"> </span>format:check
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>pnpm<span class="w"> </span>typecheck
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>pnpm<span class="w"> </span><span class="nb">test</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>pnpm<span class="w"> </span>build
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>pnpm<span class="w"> </span>lint
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>pnpm<span class="w"> </span>test:e2e
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>pnpm<span class="w"> </span>format:check
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>pnpm<span class="w"> </span>typecheck
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>pnpm<span class="w"> </span><span class="nb">test</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>pnpm<span class="w"> </span>build
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>pnpm<span class="w"> </span>lint
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>pnpm<span class="w"> </span>test:e2e
 </code></pre></div>
 <p>Playwright starts the Vite app and drives the dashboard through sync, analysis, and optimizer flows on desktop and mobile widths.</p>
 <h2 id="development-notes">Development Notes<a class="headerlink" href="#development-notes" title="Permanent link">&para;</a></h2>
