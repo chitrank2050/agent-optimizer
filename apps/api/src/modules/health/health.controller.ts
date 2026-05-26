@@ -4,18 +4,36 @@
  * Returns service status, database reachability, timestamp, and the active
  * correlation ID so failures can be traced through logs and screenshots.
  */
-import { Controller, Get, Inject, Req } from '@nestjs/common';
-import type { HealthResponse } from '@agent-optimizer/contracts';
-import type { Request } from 'express';
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  HealthCheck,
+  HealthCheckResult,
+  HealthCheckService,
+} from '@nestjs/terminus';
 
-import { HealthService } from './health.service';
+import { PrismaHealthIndicator } from './health.service';
 
-@Controller('health')
+
+@ApiTags('Health')
+@Controller({
+  path: 'health',
+  version: VERSION_NEUTRAL,
+})
 export class HealthController {
-  constructor(@Inject(HealthService) private readonly healthService: HealthService) {}
+    constructor(
+    private health: HealthCheckService,
+    private prismaHealth: PrismaHealthIndicator,
+  ) {}
 
   @Get()
-  async check(@Req() request: Request): Promise<HealthResponse> {
-    return this.healthService.check(request.correlationId);
+  @HealthCheck()
+  @ApiOperation({ summary: 'Check API and dependency health' })
+  async check(): Promise<HealthCheckResult> {
+    return this.health.check([
+      // Each arrow function returns a health indicator result.
+      // If the check throws, Terminus catches it and reports "down".
+      () => this.prismaHealth.isHealthy('postgres'),
+    ]);
   }
 }
