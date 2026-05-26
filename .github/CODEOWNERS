@@ -1,0 +1,24 @@
+# CODEOWNERS
+
+# Default owner for all files in the repository
+
+-                      @chitrank2050
+
+# Apps (Backend & Frontend)
+
+/apps/api/ @chitrank2050
+/apps/web/ @chitrank2050
+
+# Shared packages
+
+/packages/ai/ @chitrank2050
+/packages/contracts/ @chitrank2050
+
+# GitHub Actions & Configuration
+
+/.github/ @chitrank2050
+
+# Documentation & Site Configuration
+
+/docs/ @chitrank2050
+/mkdocs.yml @chitrank2050
