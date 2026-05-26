@@ -66,15 +66,17 @@ Create a Render Web Service from the GitHub repository.
 
 Recommended settings:
 
-| Setting           | Value                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------- |
-| Runtime           | Node                                                                                     |
-| Root directory    | repository root                                                                          |
-| Build command     | `corepack enable && pnpm install --frozen-lockfile && pnpm db:generate && pnpm build`    |
-| Start command     | `pnpm --filter @agent-optimizer/api db:migrate:deploy && node apps/api/dist/src/main.js` |
-| Health check path | `/health`                                                                                |
+| Setting           | Value                                                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Runtime           | Node                                                                                                                                 |
+| Root directory    | repository root                                                                                                                      |
+| Build command     | `corepack enable && corepack prepare pnpm@11.1.3 --activate && pnpm install --frozen-lockfile && pnpm db:generate && pnpm build:api` |
+| Start command     | `pnpm deploy:api:start`                                                                                                              |
+| Health check path | `/health`                                                                                                                            |
 
 Render provides the public bind port through `PORT`; do not hardcode `API_PORT` on Render unless you intentionally need a local override.
+
+Use the Neon direct connection string for `DATABASE_URL` during migrations. Avoid the `*-pooler.*.neon.tech` URL for `prisma migrate deploy`; pooled URLs are useful for application traffic but can fail or hang during schema migration.
 
 Add the API environment variables from this guide. After deploy, verify:
 
