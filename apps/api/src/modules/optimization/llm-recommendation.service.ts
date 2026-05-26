@@ -136,24 +136,20 @@ export class LlmRecommendationService {
       body: JSON.stringify({
         model: this.model,
         temperature: 0.2,
-        input: [
+        messages: [
           {
             role: 'system',
             content:
-              'You are a senior Voice AI QA optimizer. Return only evidence-linked recommendations that improve a HighLevel Voice AI agent.',
+              'You are a senior Voice AI QA optimizer. Return only evidence-linked recommendations that improve a HighLevel Voice AI agent. You must output strictly in JSON format matching the following JSON schema:\n' +
+              JSON.stringify(openAiRecommendationJsonSchema),
           },
           {
             role: 'user',
             content: JSON.stringify(buildPromptPayload(agent, analysis, optimization)),
           },
         ],
-        text: {
-          format: {
-            type: 'json_schema',
-            name: 'voice_agent_optimizer_recommendations',
-            strict: true,
-            schema: openAiRecommendationJsonSchema,
-          },
+        response_format: {
+          type: 'json_object',
         },
       }),
       signal: AbortSignal.timeout(30_000),
@@ -219,6 +215,15 @@ function extractOutputText(payload: unknown): string | undefined {
   }
 
   const record = payload as Record<string, unknown>;
+
+  // OpenAI format
+  if (Array.isArray(record.choices) && record.choices.length > 0) {
+    const choice = record.choices[0] as Record<string, unknown>;
+    const message = choice.message as Record<string, unknown> | undefined;
+    if (message && typeof message.content === 'string') {
+      return message.content;
+    }
+  }
 
   if (typeof record.output_text === 'string') {
     return record.output_text;

@@ -27,7 +27,16 @@ import { PrismaModule } from './modules/prisma/prisma.module';
   ],
 })
 export class AppModule implements NestModule {
+  /**
+   * Middleware runs in the order registered, on every matching route.
+   *
+   * Order matters:
+   *   1. CorrelationIdMiddleware - assigns x-correlation-id
+   *   2. RequestLoggerMiddleware - logs request with that correlation ID
+   */
   configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(CorrelationIdMiddleware).forRoutes('{*path}');
+    consumer
+      .apply(CorrelationIdMiddleware, RequestLoggerMiddleware)
+      .forRoutes('{*path}');
   }
 }

@@ -148,7 +148,11 @@ export class HighLevelSyncService {
       startedAt: getDateString(callLog, ['startedAt', 'createdAt', 'dateAdded', 'callStartedAt']),
       durationSeconds: getNumber(callLog, ['durationSeconds', 'duration', 'callDuration']),
       summary: getString(callLog, ['summary', 'callSummary']),
-      transcriptAvailable: Array.isArray(callLog.transcript) || Array.isArray(callLog.messages),
+      transcriptAvailable:
+        Array.isArray(callLog.transcriptWithToolCalls) ||
+        typeof callLog.transcript === 'string' ||
+        Array.isArray(callLog.transcript) ||
+        Array.isArray(callLog.messages),
     };
   }
 
@@ -294,32 +298,72 @@ function normalizeTranscriptTurns(record: Record<string, unknown>): Array<{
   text: string;
   startedAtSeconds?: number;
 }> {
-  const source = Array.isArray(record.transcript)
-    ? record.transcript
-    : Array.isArray(record.messages)
-      ? record.messages
-      : [];
+  // Prefer transcriptWithToolCalls (structured array with timing data).
+  // Fall back to transcript array, messages array, or transcript string.
+  const source = Array.isArray(record.transcriptWithToolCalls)
+    ? record.transcriptWithToolCalls
+    : Array.isArray(record.transcript)
+      ? record.transcript
+      : Array.isArray(record.messages)
+        ? record.messages
+        : [];
 
-  return source.flatMap((turn) => {
-    if (typeof turn !== 'object' || turn === null) {
-      return [];
-    }
+  // If we have a structured array, parse objects from it.
+  if (source.length > 0) {
+    return source.flatMap((turn) => {
+      if (typeof turn !== 'object' || turn === null) {
+        return [];
+      }
 
-    const item = turn as Record<string, unknown>;
-    const text = getString(item, ['text', 'message', 'content', 'transcript']);
+      const item = turn as Record<string, unknown>;
+      const text = getString(item, ['content', 'text', 'message', 'transcript']);
 
-    if (!text) {
-      return [];
-    }
+      if (!text) {
+        return [];
+      }
 
-    const rawSpeaker = getString(item, ['speaker', 'role', 'sender'])?.toLowerCase();
-    const speaker = rawSpeaker?.includes('agent')
-      ? 'agent'
-      : rawSpeaker?.includes('system')
-        ? 'system'
-        : 'caller';
-    const startedAtSeconds = getNumber(item, ['startedAtSeconds', 'offset', 'start']);
+      const rawRole = getString(item, ['role', 'speaker', 'sender'])?.toLowerCase();
 
-    return [{ speaker, text, startedAtSeconds }];
-  });
+      // Skip tool call entries — they aren't spoken dialogue.
+      if (rawRole === 'action_executed' || rawRole === 'tool') {
+        return [];
+      }
+
+      const speaker = rawRole?.includes('agent') || rawRole === 'bot'
+        ? 'agent'
+        : rawRole?.includes('system')
+          ? 'system'
+          : 'caller';
+      const startedAtSeconds = getNumber(item, ['startTime', 'startedAtSeconds', 'offset', 'start']);
+
+      return [{ speaker, text, startedAtSeconds }];
+    });
+  }
+
+  // Fallback: parse HighLevel's plain-text transcript string ("bot:...\ nhuman:...").
+  if (typeof record.transcript === 'string' && record.transcript.trim().length > 0) {
+    return record.transcript
+      .split('\n')
+      .filter((line: string) => line.trim().length > 0)
+      .map((line: string) => {
+        const colonIndex = line.indexOf(':');
+
+        if (colonIndex === -1) {
+          return { speaker: 'caller' as const, text: line.trim() };
+        }
+
+        const rawRole = line.slice(0, colonIndex).trim().toLowerCase();
+        const text = line.slice(colonIndex + 1).trim();
+        const speaker = rawRole === 'bot' || rawRole === 'agent'
+          ? 'agent' as const
+          : rawRole === 'system'
+            ? 'system' as const
+            : 'caller' as const;
+
+        return { speaker, text };
+      })
+      .filter((turn: { text: string }) => turn.text.length > 0);
+  }
+
+  return [];
 }
