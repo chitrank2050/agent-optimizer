@@ -118,7 +118,7 @@ The sandbox implementation uses `GHL_LOCATION_PIT`. A public Marketplace release
 
 ## Documentation on GitHub Pages
 
-The documentation site uses MkDocs Material, matching the Meterplex docs setup.
+The documentation site uses MkDocs Material
 
 Local commands:
 

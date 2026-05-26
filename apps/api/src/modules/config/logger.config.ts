@@ -4,6 +4,7 @@
  */
 import type { WinstonModuleOptions } from 'nest-winston';
 import * as winston from 'winston';
+import { APP_NAME } from '../../common/constants';
 
 export const getWinstonConfig = (nodeEnv: string): WinstonModuleOptions => {
   const isProduction = nodeEnv === 'production';
@@ -24,28 +25,21 @@ export const getWinstonConfig = (nodeEnv: string): WinstonModuleOptions => {
     transports: [
       new winston.transports.Console({
         format: isProduction
-          ? winston.format.combine(
-              winston.format.timestamp(),
-              winston.format.json(),
-            )
+          ? winston.format.combine(winston.format.timestamp(), winston.format.json())
           : winston.format.combine(
               winston.format.colorize({ all: true }),
               winston.format.timestamp({ format: 'HH:mm:ss' }),
               winston.format.printf((info) => {
-                const { timestamp, level, message, context, ...metadata } =
-                  info;
-                const contextStr = context
-                  ? ` \x1b[33m[${context}]\x1b[0m`
-                  : '';
+                const { timestamp, level, message, context, ...metadata } = info;
+                const contextStr = context ? ` \x1b[33m[${context}]\x1b[0m` : '';
                 const metaStr = Object.keys(metadata).length
                   ? `\n\x1b[90m${JSON.stringify(metadata, null, 2)}\x1b[0m`
                   : '';
 
-                return `\x1b[90m[Meterplex]\x1b[0m ${timestamp} ${level}${contextStr} ${message}${metaStr}`;
+                return `\x1b[90m[${APP_NAME}]\x1b[0m ${timestamp} ${level}${contextStr} ${message}${metaStr}`;
               }),
             ),
       }),
-
     ],
   };
 };

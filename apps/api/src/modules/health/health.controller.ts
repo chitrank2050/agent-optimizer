@@ -4,16 +4,13 @@
  * Returns service status, database reachability, timestamp, and the active
  * correlation ID so failures can be traced through logs and screenshots.
  */
-import { Controller, Get, Inject, VERSION_NEUTRAL } from '@nestjs/common';
+import { Controller, Get, Inject, VERSION_NEUTRAL, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  HealthCheck,
-  HealthCheckResult,
-  HealthCheckService,
-} from '@nestjs/terminus';
+import { HealthCheckService } from '@nestjs/terminus';
+import type { HealthResponse } from '@agent-optimizer/contracts';
+import { randomUUID } from 'crypto';
 
 import { PrismaHealthIndicator } from './health.service';
-
 
 @ApiTags('Health')
 @Controller({
@@ -21,19 +18,45 @@ import { PrismaHealthIndicator } from './health.service';
   version: VERSION_NEUTRAL,
 })
 export class HealthController {
-    constructor(
+  constructor(
     @Inject(HealthCheckService) private health: HealthCheckService,
     @Inject(PrismaHealthIndicator) private prismaHealth: PrismaHealthIndicator,
   ) {}
 
   @Get()
-  @HealthCheck()
   @ApiOperation({ summary: 'Check API and dependency health' })
-  async check(): Promise<HealthCheckResult> {
-    return this.health.check([
-      // Each arrow function returns a health indicator result.
-      // If the check throws, Terminus catches it and reports "down".
-      () => this.prismaHealth.isHealthy('postgres'),
-    ]);
+  async check(@Headers('x-correlation-id') correlationId?: string): Promise<HealthResponse> {
+    let result: any;
+    try {
+      result = await this.health.check([
+        () => this.prismaHealth.isHealthy('postgres'),
+      ]);
+    } catch (err: any) {
+      if (err.response) {
+        result = err.response;
+      } else {
+        throw err;
+      }
+    }
+
+    const isDatabaseUp = result.details?.postgres?.status === 'up';
+    const isSystemOk = result.status === 'ok';
+    
+    const response: HealthResponse = {
+      status: isSystemOk ? 'ok' : 'down',
+      service: 'agent-optimizer-api',
+      timestamp: new Date().toISOString(),
+      correlationId: correlationId || randomUUID(),
+      checks: {
+        api: 'ok',
+        database: isDatabaseUp ? 'ok' : 'down',
+      },
+    };
+
+    if (response.status !== 'ok') {
+      throw new HttpException(response, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    return response;
   }
 }

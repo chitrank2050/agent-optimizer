@@ -15,7 +15,7 @@
  *   - Minimal load on the database
  *   - Tests the full path: connection pool → network → Postgres → response
  */
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   HealthIndicatorResult,
   HealthIndicatorService,
@@ -26,8 +26,8 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class PrismaHealthIndicator {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly healthIndicatorService: HealthIndicatorService,
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(HealthIndicatorService) private readonly healthIndicatorService: HealthIndicatorService,
   ) {}
 
   /**
