@@ -32,6 +32,7 @@
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "build:api": "turbo run build --filter=@agent-optimizer/api",
+    "build:web": "turbo run build --filter=@agent-optimizer/web",
     "// --- 🧹 Hygiene ---": "",
     "lint": "turbo run lint && pnpm run lint:md",
     "lint:md": "markdownlint \"**/*.md\" --fix --ignore node_modules --ignore CHANGELOG.md",

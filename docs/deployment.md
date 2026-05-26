@@ -90,13 +90,13 @@ Create a Vercel project from the same repository.
 
 Recommended settings:
 
-| Setting          | Value                                               |
-| ---------------- | --------------------------------------------------- |
-| Framework preset | Vite                                                |
-| Root directory   | repository root                                     |
-| Install command  | `corepack enable && pnpm install --frozen-lockfile` |
-| Build command    | `pnpm --filter @agent-optimizer/web build`          |
-| Output directory | `apps/web/dist`                                     |
+| Setting          | Value                                                                                          |
+| ---------------- | ---------------------------------------------------------------------------------------------- |
+| Framework preset | Vite                                                                                           |
+| Root directory   | repository root                                                                                |
+| Install command  | `corepack enable && corepack prepare pnpm@11.1.3 --activate && pnpm install --frozen-lockfile` |
+| Build command    | `pnpm build:web`                                                                               |
+| Output directory | `apps/web/dist`                                                                                |
 
 Add:
 
