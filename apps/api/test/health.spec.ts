@@ -35,7 +35,7 @@ describe('HealthController', () => {
 
   it('returns API and database health with a correlation id', async () => {
     const response = await request(app.getHttpServer())
-      .get('/api/v1/health')
+      .get('/health')
       .set('x-correlation-id', 'health-test')
       .expect(200);
 

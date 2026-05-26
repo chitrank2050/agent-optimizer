@@ -24,7 +24,7 @@ pnpm dev
 
 Default local URLs:
 
-- API health: `http://localhost:3000/api/v1/health`
+- API health: `http://localhost:3000/health`
 - API docs: `http://localhost:3000/api/docs`
 - Web dashboard: `http://localhost:5173`
 

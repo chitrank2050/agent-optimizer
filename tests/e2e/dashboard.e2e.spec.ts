@@ -148,7 +148,7 @@ const optimizationResponse = {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.route('**/api/v1/health', (route) =>
+  await page.route('**/health', (route) =>
     route.fulfill({
       status: 200,
       contentType: 'application/json',

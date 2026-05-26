@@ -32,7 +32,7 @@ const {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[var(--surface)] text-[var(--ink)]">
+  <main class="min-h-screen bg-(--surface) text-(--ink)">
     <DashboardHero :health="health" :health-error="healthError" />
 
     <HighLevelSyncPanel

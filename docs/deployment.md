@@ -73,12 +73,12 @@ Recommended settings:
 | Root directory    | repository root                                                                          |
 | Build command     | `corepack enable && pnpm install --frozen-lockfile && pnpm db:generate && pnpm build`    |
 | Start command     | `pnpm --filter @agent-optimizer/api db:migrate:deploy && node apps/api/dist/src/main.js` |
-| Health check path | `/api/v1/health`                                                                         |
+| Health check path | `/health`                                                                                |
 
 Add the API environment variables from this guide. After deploy, verify:
 
 ```bash
-curl https://your-api-domain.onrender.com/api/v1/health
+curl https://your-api-domain.onrender.com/health
 ```
 
 ## Web on Vercel
@@ -150,7 +150,7 @@ https://chitrank2050.github.io/agent-optimizer
 Run these after deployment:
 
 ```bash
-curl https://your-api-domain.onrender.com/api/v1/health
+curl https://your-api-domain.onrender.com/health
 curl --request POST \
   --url https://your-api-domain.onrender.com/api/v1/integrations/highlevel/sync \
   --header 'content-type: application/json' \
