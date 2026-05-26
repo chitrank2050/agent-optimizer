@@ -141,7 +141,8 @@ export class LlmRecommendationService {
             role: 'system',
             content:
               'You are a senior Voice AI QA optimizer. Return only evidence-linked recommendations that improve a HighLevel Voice AI agent. You must output strictly in JSON format matching the following JSON schema:\n' +
-              JSON.stringify(openAiRecommendationJsonSchema),
+              JSON.stringify(openAiRecommendationJsonSchema) +
+              '\n\nCRITICAL INSTRUCTION: For any recommendation with target="prompt", do NOT output the entire agent prompt or large parts of it in the "after" field. Instead, output ONLY the specific instructions, rules, or text block that needs to be added, modified, or appended to the prompt.',
           },
           {
             role: 'user',
@@ -167,7 +168,23 @@ export class LlmRecommendationService {
       throw new Error('LLM response did not include structured output text');
     }
 
-    const parsedJson = JSON.parse(outputText) as unknown;
+    const parsedJson = JSON.parse(outputText) as Record<string, unknown>;
+
+    if (parsedJson && Array.isArray(parsedJson.recommendations)) {
+      parsedJson.recommendations = parsedJson.recommendations.map((rec: any) => {
+        if (typeof rec === 'object' && rec !== null && typeof rec.target === 'string') {
+          const target = rec.target.toLowerCase().trim();
+          if (target === 'knowledge base' || target === 'knowledge-base' || target === 'knowledgebase') {
+            rec.target = 'knowledge_base';
+          } else if (target === 'guard rail' || target === 'guard-rail' || target === 'guard_rail') {
+            rec.target = 'guardrail';
+          } else {
+            rec.target = target;
+          }
+        }
+        return rec;
+      });
+    }
 
     return llmRecommendationResponseSchema.parse(parsedJson).recommendations;
   }

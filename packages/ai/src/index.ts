@@ -270,7 +270,7 @@ export function recommendOptimizations(
       'prompt-budget-required',
       'Make budget capture a hard gate before closing',
       'Budget capture is currently missing or too easy for the agent to skip.',
-      `${agent.prompt}\n\nBefore closing or booking, ask one concise budget question and confirm the answer in the final recap.`,
+      'Before closing or booking, ask one concise budget question and confirm the answer in the final recap.',
       'Generated tests show the current prompt can pass through a booking path without an explicit budget capture gate.',
       ['ask_budget'],
     );
@@ -283,7 +283,7 @@ export function recommendOptimizations(
       'prompt-sms-consent-required',
       'Require explicit SMS consent before sending confirmations',
       'SMS consent is not strongly enforced in the current prompt.',
-      `${agent.prompt}\n\nOnly send or promise SMS after asking for explicit consent using the configured consent phrase.`,
+      'Only send or promise SMS after asking for explicit consent using the configured consent phrase.',
       'Generated follow-up tests require consent before confirmation messaging.',
       ['ask_sms_consent'],
     );
@@ -445,7 +445,8 @@ function evaluateTestCase(agent: AgentConfig, testCase: OptimizerTestCase): Test
 
     if (normalized.includes('booking') || normalized.includes('slot')) {
       return (
-        !tools.has('appointment_booking') && !/\b(book|calendar|slot|appointment)\b/i.test(prompt)
+        !tools.has('appointment_booking') &&
+        !/\b(book|calendar|slot|appointment)[a-z]*\b/i.test(prompt)
       );
     }
 
@@ -459,7 +460,7 @@ function evaluateTestCase(agent: AgentConfig, testCase: OptimizerTestCase): Test
       normalized.includes('diagnose') ||
       normalized.includes('quote')
     ) {
-      return !/\b(do not|don't|avoid|only).{0,80}\b(price|diagnos|guarantee|claim|policy)\b/i.test(
+      return !/\b(do not|don['’]t|avoid|only).{0,80}\b(price|diagnos|guarantee|claim|policy)[a-z]*\b/i.test(
         prompt,
       );
     }
@@ -510,7 +511,7 @@ function recommendationForPattern(
         'prompt-booking-flow',
         'Tighten the appointment booking branch',
         'Booking flow guidance is present but not reliably followed.',
-        `${agent.prompt}\n\nWhen a caller asks to book, reschedule, or qualifies with a high score, offer available slots and confirm the selected appointment before closing.`,
+        'When a caller asks to book, reschedule, or qualifies with a high score, offer available slots and confirm the selected appointment before closing.',
         'Recurring booking-flow findings show callers requested appointments without a clear slot offer or booking confirmation.',
         evidenceIds,
       );
@@ -520,7 +521,7 @@ function recommendationForPattern(
         'prompt-qualification-checklist',
         'Add a required qualification checklist',
         'Qualification fields are described but not enforced as a close gate.',
-        `${agent.prompt}\n\nBefore ending the call, verify name, callback channel, requested service, ZIP, preferred time, budget, and SMS consent if texting is needed.`,
+        'Before ending the call, verify name, callback channel, requested service, ZIP, preferred time, budget, and SMS consent if texting is needed.',
         'Transcript findings show repeated missed qualification questions.',
         evidenceIds,
       );
@@ -530,7 +531,7 @@ function recommendationForPattern(
         'prompt-follow-up-consent',
         'Strengthen follow-up consent rules',
         'Follow-up messaging can happen without a strong consent checkpoint.',
-        `${agent.prompt}\n\nDo not send or promise SMS until the caller explicitly agrees to receive text messages.`,
+        'Do not send or promise SMS until the caller explicitly agrees to receive text messages.',
         'Follow-up findings show SMS consent was not captured before confirmation language.',
         evidenceIds,
       );
@@ -540,7 +541,7 @@ function recommendationForPattern(
         'prompt-urgency-objection',
         'Add urgent objection handling language',
         'Urgent callers need a clear branch for earliest-slot booking and specialist escalation.',
-        `${agent.prompt}\n\nIf a caller says the matter is urgent and earlier slots are unavailable, book the earliest available slot and say their details are being forwarded for a faster callback attempt.`,
+        'If a caller says the matter is urgent and earlier slots are unavailable, book the earliest available slot and say their details are being forwarded for a faster callback attempt.',
         'Urgency findings show callers were not escalated or given earliest-slot language.',
         evidenceIds,
       );
@@ -550,7 +551,7 @@ function recommendationForPattern(
         'guardrail-policy-boundary',
         'Reinforce unsupported-claim guardrails',
         'The prompt boundary should be harder for pricing, diagnoses, guarantees, and policies.',
-        `${agent.prompt}\n\nNever invent exact prices, diagnoses, guarantees, or policies. Use approved knowledge only and offer a callback when details are unavailable.`,
+        'Never invent exact prices, diagnoses, guarantees, or policies. Use approved knowledge only and offer a callback when details are unavailable.',
         'Policy findings show unsupported claims or weak boundary handling.',
         evidenceIds,
         'guardrail',
@@ -574,7 +575,7 @@ function recommendationForPattern(
         'prompt-tone-recovery',
         'Add interruption recovery language',
         'The prompt needs a concise recovery pattern for interrupted or frustrated callers.',
-        `${agent.prompt}\n\nWhen interrupted, briefly acknowledge the correction, update the captured value, and ask only the next required question.`,
+        'When interrupted, briefly acknowledge the correction, update the captured value, and ask only the next required question.',
         'Tone findings show the agent needs stronger guidance for caller interruptions or frustration.',
         evidenceIds,
       );

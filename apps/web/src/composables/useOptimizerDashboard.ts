@@ -50,6 +50,8 @@ export function useOptimizerDashboard() {
 
     try {
       integration.value = await syncHighLevel(locationId);
+      analysesByAgentId.value = {};
+      optimizationsByAgentId.value = {};
     } catch (error) {
       integrationError.value =
         error instanceof Error ? error.message : 'Unable to sync HighLevel data';
@@ -61,6 +63,11 @@ export function useOptimizerDashboard() {
   async function analyzeAgent(agentId: string): Promise<void> {
     analyzingAgentId.value = agentId;
     analysisError.value = null;
+
+    // Clear optimization for this agent on the frontend since it is now out of date.
+    const newOptimizations = { ...optimizationsByAgentId.value };
+    delete newOptimizations[agentId];
+    optimizationsByAgentId.value = newOptimizations;
 
     try {
       const result = await runAgentAnalysis(agentId);
