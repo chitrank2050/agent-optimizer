@@ -7,6 +7,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/modules/prisma/prisma.service';
+import { API_PREFIX } from '../src/common/constants';
 
 describe('HealthController', () => {
   let app: INestApplication;
@@ -25,7 +26,9 @@ describe('HealthController', () => {
       .compile();
 
     app = moduleRef.createNestApplication();
-    app.setGlobalPrefix('api/v1');
+    app.setGlobalPrefix(API_PREFIX, {
+      exclude: ['health'],
+    });
     await app.init();
   });
 

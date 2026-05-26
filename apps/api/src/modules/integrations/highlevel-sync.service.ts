@@ -63,6 +63,17 @@ export class HighLevelSyncService {
     const syncedAgents = await Promise.all(
       agents.map((agent) => this.upsertAgent(localLocation.id, agent)),
     );
+
+    const agentDbIds = syncedAgents.map((a) => a.id);
+    if (agentDbIds.length > 0) {
+      await this.prisma.$transaction([
+        this.prisma.recommendation.deleteMany({ where: { agentId: { in: agentDbIds } } }),
+        this.prisma.generatedTestCase.deleteMany({ where: { agentId: { in: agentDbIds } } }),
+        this.prisma.transcriptFinding.deleteMany({ where: { transcript: { agentId: { in: agentDbIds } } } }),
+        this.prisma.transcriptAnalysis.deleteMany({ where: { transcript: { agentId: { in: agentDbIds } } } }),
+      ]);
+    }
+
     const callLogs = callLogsResponse.callLogs.map((callLog) => this.normalizeCallLog(callLog));
     const transcriptImports = await this.importTranscriptPayloads(
       localLocation.id,

@@ -160,12 +160,12 @@ describe('LlmRecommendationService', () => {
     const [, init] = fetchSpy.mock.calls[0] as [string, { body: string; method: string }];
     const body = JSON.parse(init.body) as {
       model: string;
-      text: { format: { type: string } };
+      response_format: { type: string };
     };
 
     expect(init.method).toBe('POST');
     expect(body.model).toBe('gpt-test');
-    expect(body.text.format.type).toBe('json_schema');
+    expect(body.response_format.type).toBe('json_object');
   });
 });
 

@@ -42,6 +42,11 @@ export class AnalysisService {
       throw new NotFoundException('Agent was not found');
     }
 
+    await this.prisma.$transaction([
+      this.prisma.recommendation.deleteMany({ where: { agentId } }),
+      this.prisma.generatedTestCase.deleteMany({ where: { agentId } }),
+    ]);
+
     const agentConfig = toAgentConfig(agent);
     const transcripts = agent.transcripts.map((transcript) => toTranscript(transcript));
     const analyses = transcripts.map((transcript) => analyzeTranscript(agentConfig, transcript));
