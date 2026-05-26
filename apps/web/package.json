@@ -6,7 +6,7 @@
   "scripts": {
     "build": "vue-tsc -b && vite build",
     "dev": "vite --host 0.0.0.0",
-    "lint": "vue-tsc -b --noEmit",
+    "lint": "eslint .",
     "test": "vue-tsc -b --noEmit",
     "typecheck": "vue-tsc -b --noEmit"
   },

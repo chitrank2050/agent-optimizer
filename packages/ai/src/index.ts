@@ -639,13 +639,23 @@ function evaluateQualification(
   missed: Set<CriterionKey>,
   findings: TranscriptFinding[],
 ): void {
-  has(callerText, /\b(plumbing|repair|service|appointment|cleaning|consultation|leak|heater)\b/i)
-    ? passed.add('capture_service')
-    : missed.add('capture_service');
-  has(callerText, /\b\d{5}(?:-\d{4})?\b/) ? passed.add('capture_zip') : missed.add('capture_zip');
-  has(callerText, /\b(today|tomorrow|morning|afternoon|evening|\d{1,2}\s?(?:am|pm))\b/i)
-    ? passed.add('capture_preferred_time')
-    : missed.add('capture_preferred_time');
+  if (has(callerText, /\b(plumbing|repair|service|appointment|cleaning|consultation|leak|heater)\b/i)) {
+    passed.add('capture_service');
+  } else {
+    missed.add('capture_service');
+  }
+
+  if (has(callerText, /\b\d{5}(?:-\d{4})?\b/)) {
+    passed.add('capture_zip');
+  } else {
+    missed.add('capture_zip');
+  }
+
+  if (has(callerText, /\b(today|tomorrow|morning|afternoon|evening|\d{1,2}\s?(?:am|pm))\b/i)) {
+    passed.add('capture_preferred_time');
+  } else {
+    missed.add('capture_preferred_time');
+  }
 
   if (
     has(agentText, /\b(budget|price range|price expectation|how much were you looking to spend)\b/i)

@@ -1,0 +1,9 @@
+node_modules
+dist
+.turbo
+.git
+*.db
+*.db-journal
+.env
+README.md
+docs/*
