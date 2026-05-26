@@ -2,7 +2,7 @@
 
 All notable changes to the HighLevel Voice AI Agent Optimizer.
 
-## [1.0.0] - 2026-05-26
+## [0.1.0] - 2026-05-26
 
 ### ⚙️ Maintenance
 
@@ -63,6 +63,7 @@ All notable changes to the HighLevel Voice AI Agent Optimizer.
 - Add logger to PrismaService and export Prisma components via index file ([51f741c](https://github.com/chitrank2050/agent-optimizer/commit/51f741c640d4954ed8ec95e8fd51db60628db9bb))
 - Add API versioning to HighLevel integrations controller and clean up route definition ([46fb743](https://github.com/chitrank2050/agent-optimizer/commit/46fb74395705a23aefd5aa56c5e6986b84e9d0e0))
 - Add CODEOWNERS file to define repository ownership and maintainer responsibilities ([de2ab39](https://github.com/chitrank2050/agent-optimizer/commit/de2ab3994a64ce6c8f4dca8ef2f0b40423480036))
+- Implement automated changelog generation with git-cliff ([28fa2c2](https://github.com/chitrank2050/agent-optimizer/commit/28fa2c22952c1ec6470d33b00e1f24635b3e545f))
 
 ### 🚜 Refactoring
 
