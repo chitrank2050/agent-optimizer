@@ -42,7 +42,7 @@
 ## Production Boundaries
 
 - The analyzer, test generator, evaluator, and baseline recommendation engine are deterministic TypeScript logic in `packages/ai`.
-- LLM recommendation refinement is functional when `OPENAI_API_KEY` is configured. It uses structured JSON output and sends normalized findings/tests/evaluations rather than raw transcript turns.
+- LLM recommendation refinement is functional when `LLM_API_KEY` is configured. It uses structured JSON output and sends normalized findings/tests/evaluations rather than raw transcript turns.
 - HighLevel Marketplace signed user context is documented as the production auth path.
 - Applying recommendations back to HighLevel is not automatic.
 - `PATCH /voice-ai/agents/:agentId` belongs behind an approval flow to avoid unsafe live-agent changes.

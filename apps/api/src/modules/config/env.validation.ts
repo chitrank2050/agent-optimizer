@@ -51,11 +51,15 @@ export class EnvConfig {
 
   @IsString()
   @IsOptional()
-  OPENAI_API_KEY?: string;
+  LLM_API_KEY?: string;
 
   @IsString()
   @IsOptional()
-  OPENAI_MODEL?: string;
+  LLM_MODEL?: string;
+
+  @IsUrl({ require_tld: false })
+  @IsOptional()
+  LLM_RESPONSES_URL?: string;
 }
 
 /**

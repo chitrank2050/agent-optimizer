@@ -93,7 +93,7 @@ describe('LlmRecommendationService', () => {
     vi.unstubAllGlobals();
   });
 
-  it('uses deterministic recommendations when no OpenAI key is configured', async () => {
+  it('uses deterministic recommendations when no LLM key is configured', async () => {
     const fetchSpy = vi.fn();
     vi.stubGlobal('fetch', fetchSpy);
     const service = new LlmRecommendationService(configWith({}));
@@ -104,7 +104,18 @@ describe('LlmRecommendationService', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('merges schema-valid OpenAI recommendations with the deterministic baseline', async () => {
+  it('uses deterministic recommendations when no LLM endpoint is configured', async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal('fetch', fetchSpy);
+    const service = new LlmRecommendationService(configWith({ LLM_API_KEY: 'test-key' }));
+
+    await expect(service.recommend({ agent, analysis, optimization })).resolves.toEqual([
+      baselineRecommendation,
+    ]);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('merges schema-valid LLM recommendations with the deterministic baseline', async () => {
     const llmRecommendation: OptimizationRecommendation = {
       id: 'llm-model-upgrade',
       target: 'model',
@@ -134,7 +145,11 @@ describe('LlmRecommendationService', () => {
     });
     vi.stubGlobal('fetch', fetchSpy);
     const service = new LlmRecommendationService(
-      configWith({ OPENAI_API_KEY: 'test-key', OPENAI_MODEL: 'gpt-test' }),
+      configWith({
+        LLM_API_KEY: 'test-key',
+        LLM_MODEL: 'gpt-test',
+        LLM_RESPONSES_URL: 'https://llm.example.test/v1/responses',
+      }),
     );
 
     await expect(service.recommend({ agent, analysis, optimization })).resolves.toEqual([

@@ -1,8 +1,8 @@
 /**
  * LlmRecommendationService - Optional AI recommendation adapter.
  *
- * Uses OpenAI structured outputs when an API key is configured, while keeping
- * deterministic recommendations as the reliable baseline and fallback path.
+ * Uses a structured-output LLM endpoint when an API key is configured, while
+ * keeping deterministic recommendations as the reliable baseline and fallback.
  */
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -84,10 +84,12 @@ export class LlmRecommendationService {
   private readonly logger = new Logger(LlmRecommendationService.name);
   private readonly apiKey?: string;
   private readonly model: string;
+  private readonly responsesUrl?: string;
 
   constructor(@Inject(ConfigService) config: ConfigService<AppEnv, true>) {
-    this.apiKey = config.get('OPENAI_API_KEY', { infer: true });
-    this.model = config.get('OPENAI_MODEL', { infer: true }) ?? 'gpt-4.1-mini';
+    this.apiKey = config.get('LLM_API_KEY', { infer: true });
+    this.model = config.get('LLM_MODEL', { infer: true }) ?? 'gpt-4.1-mini';
+    this.responsesUrl = config.get('LLM_RESPONSES_URL', { infer: true });
   }
 
   /**
@@ -97,12 +99,12 @@ export class LlmRecommendationService {
   async recommend(context: RecommendationContext): Promise<OptimizationRecommendation[]> {
     const baseline = context.optimization.recommendations;
 
-    if (!this.apiKey) {
+    if (!this.apiKey || !this.responsesUrl) {
       return baseline;
     }
 
     try {
-      const refined = await this.requestStructuredRecommendations(context);
+      const refined = await this.requestStructuredRecommendations(context, this.responsesUrl);
       const merged = new Map(baseline.map((recommendation) => [recommendation.id, recommendation]));
 
       for (const recommendation of refined) {
@@ -125,8 +127,8 @@ export class LlmRecommendationService {
     agent,
     analysis,
     optimization,
-  }: RecommendationContext): Promise<OptimizationRecommendation[]> {
-    const response = await fetch('https://api.openai.com/v1/responses', {
+  }: RecommendationContext, responsesUrl: string): Promise<OptimizationRecommendation[]> {
+    const response = await fetch(responsesUrl, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.apiKey}`,
@@ -161,13 +163,13 @@ export class LlmRecommendationService {
     const payload = (await response.json().catch(() => ({}))) as unknown;
 
     if (!response.ok) {
-      throw new Error(`OpenAI request failed with status ${response.status}`);
+      throw new Error(`LLM request failed with status ${response.status}`);
     }
 
     const outputText = extractOutputText(payload);
 
     if (!outputText) {
-      throw new Error('OpenAI response did not include structured output text');
+      throw new Error('LLM response did not include structured output text');
     }
 
     const parsedJson = JSON.parse(outputText) as unknown;
