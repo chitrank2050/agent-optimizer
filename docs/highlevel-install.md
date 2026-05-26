@@ -15,11 +15,10 @@ This project is designed to run inside a HighLevel account as a Marketplace Cust
 Set these values in `.env`:
 
 ```bash
-LOCATION_ID=your_highlevel_location_id
-LOCATION_PIT=pit-your-location-token
+GHL_LOCATION_ID=your_highlevel_location_id
+GHL_LOCATION_PIT=pit-your-location-token
 GHL_API_BASE_URL=https://services.leadconnectorhq.com
 GHL_API_VERSION=2021-07-28
-GHL_PRIVATE_INTEGRATION_TOKEN=pit-your-location-token
 ```
 
 For the web app:
@@ -59,11 +58,11 @@ pnpm dev
 
 ## Production Auth Path
 
-The sandbox implementation uses a location private integration token for API access. The intended marketplace production path is:
+The sandbox implementation uses `GHL_LOCATION_PIT` for API access. A public Marketplace release would use HighLevel signed user context and installed-account credentials:
 
 - HighLevel Custom Page renders the Vue app in an iframe.
 - HighLevel signed user context is sent to the backend.
-- Backend validates/decrypts the signed context with `GHL_APP_SHARED_SECRET`.
+- Backend validates/decrypts the signed context with the Marketplace app secret.
 - Backend maps the HighLevel company/location to local tenant/location records.
 - API calls use OAuth/private integration credentials scoped to the installed customer account.
 

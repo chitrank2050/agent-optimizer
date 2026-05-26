@@ -26,9 +26,7 @@ export class HighLevelClientService {
   constructor(@Inject(ConfigService) config: ConfigService<AppEnv, true>) {
     this.baseUrl = config.get('GHL_API_BASE_URL', { infer: true });
     this.version = config.get('GHL_API_VERSION', { infer: true });
-    this.token =
-      config.get('LOCATION_PIT', { infer: true }) ??
-      config.get('GHL_PRIVATE_INTEGRATION_TOKEN', { infer: true });
+    this.token = config.get('GHL_LOCATION_PIT', { infer: true });
   }
 
   /**

@@ -29,27 +29,19 @@ export class EnvConfig {
 
   @IsString()
   @IsOptional()
-  LOCATION_ID?: string;
+  GHL_LOCATION_ID?: string;
 
   @IsString()
   @IsOptional()
-  LOCATION_PIT?: string;
+  GHL_LOCATION_PIT?: string;
 
   @IsString()
   @IsOptional()
-  AGENT_ID?: string;
+  GHL_AGENT_ID?: string;
 
   @IsString()
   @IsOptional()
-  ACCOUNT_PIT?: string;
-
-  @IsString()
-  @IsOptional()
-  GHL_APP_SHARED_SECRET?: string;
-
-  @IsString()
-  @IsOptional()
-  GHL_PRIVATE_INTEGRATION_TOKEN?: string;
+  GHL_ACCOUNT_PIT?: string;
 
   @IsUrl({ require_tld: false })
   GHL_API_BASE_URL: string = 'https://services.leadconnectorhq.com';

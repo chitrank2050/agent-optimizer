@@ -44,13 +44,13 @@ The monorepo uses one root `.env` file. The API config module resolves that file
 Use the sandbox location private integration token:
 
 ```bash
-LOCATION_ID=your_location_id
-LOCATION_PIT=pit-your-location-token
+GHL_LOCATION_ID=your_location_id
+GHL_LOCATION_PIT=pit-your-location-token
 GHL_API_BASE_URL=https://services.leadconnectorhq.com
 GHL_API_VERSION=2021-07-28
 ```
 
-The sync endpoint uses `LOCATION_PIT` first and falls back to `GHL_PRIVATE_INTEGRATION_TOKEN`.
+The API uses `GHL_LOCATION_PIT` for HighLevel requests. The web dashboard uses `VITE_GHL_LOCATION_ID` to tell the sync endpoint which location to import.
 
 ```bash
 curl --request POST \
