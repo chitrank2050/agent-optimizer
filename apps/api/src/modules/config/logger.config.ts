@@ -4,6 +4,7 @@
  */
 import type { WinstonModuleOptions } from 'nest-winston';
 import * as winston from 'winston';
+
 import { APP_NAME } from '../../common/constants';
 
 export const getWinstonConfig = (nodeEnv: string): WinstonModuleOptions => {

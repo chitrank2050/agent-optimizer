@@ -6,10 +6,11 @@
  */
 import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import type { HighLevelSyncResponse } from '@agent-optimizer/contracts';
 
-import { HighLevelSyncService } from './highlevel-sync.service';
 import { HighLevelSyncRequestDto, HighLevelSyncResponseDto } from './dto/highlevel-sync.dto';
+import { HighLevelSyncService } from './highlevel-sync.service';
 
 @ApiTags('HighLevel Integrations')
 @Controller({

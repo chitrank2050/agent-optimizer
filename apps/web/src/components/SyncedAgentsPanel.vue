@@ -6,6 +6,7 @@
 -->
 <script setup lang="ts">
 import { AlertTriangle, BarChart3, ClipboardCheck } from 'lucide-vue-next';
+
 import type { HighLevelSyncResponse } from '@agent-optimizer/contracts';
 
 defineProps<{

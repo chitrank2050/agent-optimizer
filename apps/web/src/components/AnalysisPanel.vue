@@ -6,6 +6,7 @@
 -->
 <script setup lang="ts">
 import { BarChart3 } from 'lucide-vue-next';
+
 import type {
   AnalysisBatch,
   HighLevelSyncResponse,
@@ -151,9 +152,7 @@ function patternLabel(pattern: PerformancePattern): string {
                 <p class="mt-3 text-sm leading-6">{{ analysis.summary }}</p>
 
                 <div v-if="analysis.missedCriteria.length > 0" class="mt-4">
-                  <h5 class="text-xs font-semibold uppercase text-(--muted)">
-                    Missed criteria
-                  </h5>
+                  <h5 class="text-xs font-semibold uppercase text-(--muted)">Missed criteria</h5>
                   <ul class="mt-2 space-y-2 text-sm">
                     <li
                       v-for="criterion in analysis.missedCriteria"
@@ -168,10 +167,7 @@ function patternLabel(pattern: PerformancePattern): string {
             </div>
           </div>
 
-          <p
-            v-else
-            class="mt-4 rounded-md bg-(--surface) px-3 py-2 text-sm text-(--muted)"
-          >
+          <p v-else class="mt-4 rounded-md bg-(--surface) px-3 py-2 text-sm text-(--muted)">
             Run analysis after syncing transcripts for this agent.
           </p>
         </article>

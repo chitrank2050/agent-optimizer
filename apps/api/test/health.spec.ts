@@ -1,13 +1,12 @@
-import 'reflect-metadata';
-
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import 'reflect-metadata';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/modules/prisma/prisma.service';
 import { API_PREFIX } from '../src/common/constants';
+import { PrismaService } from '../src/modules/prisma/prisma.service';
 
 describe('HealthController', () => {
   let app: INestApplication;

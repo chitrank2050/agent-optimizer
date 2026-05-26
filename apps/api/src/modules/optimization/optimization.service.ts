@@ -12,15 +12,16 @@ import {
   TestEvaluationStatus,
   TestPathType,
 } from '@prisma/client';
+
 import { runOptimizationLoop } from '@agent-optimizer/ai';
 import {
-  issueCategorySchema,
-  testCaseSchema,
   type AgentConfig,
   type OptimizationRecommendation,
   type OptimizationRun,
   type OptimizerTestCase,
   type TestEvaluation,
+  issueCategorySchema,
+  testCaseSchema,
 } from '@agent-optimizer/contracts';
 
 import { AnalysisService } from '../analysis/analysis.service';

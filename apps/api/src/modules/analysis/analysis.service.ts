@@ -6,16 +6,17 @@
  */
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AnalysisOutcome, FindingSeverity, Prisma } from '@prisma/client';
+
 import { aggregateAnalysisPatterns, analyzeTranscript } from '@agent-optimizer/ai';
 import {
-  analysisCriterionSchema,
-  transcriptTurnSchema,
   type AgentConfig,
   type AnalysisBatch,
   type AnalysisCriterion,
   type Transcript,
   type TranscriptAnalysis,
   type TranscriptFinding,
+  analysisCriterionSchema,
+  transcriptTurnSchema,
 } from '@agent-optimizer/contracts';
 
 import { PrismaService } from '../prisma/prisma.service';

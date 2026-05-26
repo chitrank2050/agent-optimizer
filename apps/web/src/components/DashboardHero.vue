@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { Activity, ClipboardCheck, FileText, Lightbulb } from 'lucide-vue-next';
 import type { Component } from 'vue';
+
 import type { HealthResponse } from '@agent-optimizer/contracts';
 
 defineProps<{

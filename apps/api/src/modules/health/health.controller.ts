@@ -4,11 +4,20 @@
  * Returns service status, database reachability, timestamp, and the active
  * correlation ID so failures can be traced through logs and screenshots.
  */
-import { Controller, Get, Inject, VERSION_NEUTRAL, Headers, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Headers,
+  HttpException,
+  HttpStatus,
+  Inject,
+  VERSION_NEUTRAL,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HealthCheckService } from '@nestjs/terminus';
-import type { HealthResponse } from '@agent-optimizer/contracts';
 import { randomUUID } from 'crypto';
+
+import type { HealthResponse } from '@agent-optimizer/contracts';
 
 import { PrismaHealthIndicator } from './health.service';
 
@@ -28,9 +37,7 @@ export class HealthController {
   async check(@Headers('x-correlation-id') correlationId?: string): Promise<HealthResponse> {
     let result: any;
     try {
-      result = await this.health.check([
-        () => this.prismaHealth.isHealthy('postgres'),
-      ]);
+      result = await this.health.check([() => this.prismaHealth.isHealthy('postgres')]);
     } catch (err: any) {
       if (err.response) {
         result = err.response;
@@ -41,7 +48,7 @@ export class HealthController {
 
     const isDatabaseUp = result.details?.postgres?.status === 'up';
     const isSystemOk = result.status === 'ok';
-    
+
     const response: HealthResponse = {
       status: isSystemOk ? 'ok' : 'down',
       service: 'agent-optimizer-api',

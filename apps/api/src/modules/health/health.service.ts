@@ -16,10 +16,7 @@
  *   - Tests the full path: connection pool → network → Postgres → response
  */
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  HealthIndicatorResult,
-  HealthIndicatorService,
-} from '@nestjs/terminus';
+import { HealthIndicatorResult, HealthIndicatorService } from '@nestjs/terminus';
 
 import { PrismaService } from '../prisma/prisma.service';
 

@@ -5,7 +5,6 @@
   and rendering focused dashboard section components.
 -->
 <script setup lang="ts">
-
 import AnalysisPanel from './components/AnalysisPanel.vue';
 import DashboardHero from './components/DashboardHero.vue';
 import HighLevelSyncPanel from './components/HighLevelSyncPanel.vue';

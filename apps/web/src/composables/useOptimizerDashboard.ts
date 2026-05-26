@@ -5,6 +5,7 @@
  * state so Vue components remain focused on rendering and events.
  */
 import { onMounted, ref } from 'vue';
+
 import type {
   AnalysisBatch,
   HealthResponse,

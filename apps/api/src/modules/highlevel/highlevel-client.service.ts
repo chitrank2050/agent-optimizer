@@ -9,12 +9,12 @@ import { ConfigService } from '@nestjs/config';
 
 import type { AppEnv } from '../config';
 import {
-  highLevelAgentsResponseSchema,
-  highLevelCallLogsResponseSchema,
-  highLevelLocationSchema,
   type HighLevelAgent,
   type HighLevelCallLogsResponse,
   type HighLevelLocation,
+  highLevelAgentsResponseSchema,
+  highLevelCallLogsResponseSchema,
+  highLevelLocationSchema,
 } from './highlevel.types';
 
 @Injectable()

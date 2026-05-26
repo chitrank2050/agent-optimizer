@@ -6,6 +6,7 @@
 -->
 <script setup lang="ts">
 import { Bot, RefreshCw } from 'lucide-vue-next';
+
 import type { HealthResponse, HighLevelSyncResponse } from '@agent-optimizer/contracts';
 
 defineProps<{
@@ -77,10 +78,7 @@ defineEmits<{
           <span class="text-(--muted)">Database</span>
           <span>{{ health?.checks.database ?? 'checking' }}</span>
         </div>
-        <p
-          v-if="healthError"
-          class="rounded-md bg-(--danger-bg) px-3 py-2 text-(--danger)"
-        >
+        <p v-if="healthError" class="rounded-md bg-(--danger-bg) px-3 py-2 text-(--danger)">
           {{ healthError }}
         </p>
       </div>

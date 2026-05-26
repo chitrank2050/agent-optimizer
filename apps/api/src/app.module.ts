@@ -6,12 +6,11 @@
  */
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
-import { CorrelationIdMiddleware,  RequestLoggerMiddleware } from './common/middleware';
-
+import { CorrelationIdMiddleware, RequestLoggerMiddleware } from './common/middleware';
 import { AnalysisModule } from './modules/analysis/analysis.module';
+import { ConfigModule } from './modules/config';
 import { HealthModule } from './modules/health/health.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
-import { ConfigModule } from './modules/config';
 import { OptimizationModule } from './modules/optimization/optimization.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 
@@ -35,8 +34,6 @@ export class AppModule implements NestModule {
    *   2. RequestLoggerMiddleware - logs request with that correlation ID
    */
   configure(consumer: MiddlewareConsumer): void {
-    consumer
-      .apply(CorrelationIdMiddleware, RequestLoggerMiddleware)
-      .forRoutes('{*path}');
+    consumer.apply(CorrelationIdMiddleware, RequestLoggerMiddleware).forRoutes('{*path}');
   }
 }

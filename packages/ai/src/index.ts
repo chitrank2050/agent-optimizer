@@ -639,7 +639,9 @@ function evaluateQualification(
   missed: Set<CriterionKey>,
   findings: TranscriptFinding[],
 ): void {
-  if (has(callerText, /\b(plumbing|repair|service|appointment|cleaning|consultation|leak|heater)\b/i)) {
+  if (
+    has(callerText, /\b(plumbing|repair|service|appointment|cleaning|consultation|leak|heater)\b/i)
+  ) {
     passed.add('capture_service');
   } else {
     missed.add('capture_service');

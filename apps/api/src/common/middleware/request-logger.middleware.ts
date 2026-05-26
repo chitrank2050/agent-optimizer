@@ -2,7 +2,6 @@
  * RequestLoggerMiddleware - Logs every incoming request and its response time.
  */
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
-
 import type { NextFunction, Request, Response } from 'express';
 
 import { CORRELATION_ID_HEADER } from '../constants';

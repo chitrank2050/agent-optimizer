@@ -1,0 +1,48 @@
+# Lefthook - Git hooks manager
+# Replaces Husky + lint-staged.
+# Docs: https://lefthook.dev/configuration/
+
+# ─── pre-commit ──────────────────────────────────────────────
+# Runs in sequence: secrets scan first, then per-file linting.
+pre-commit:
+  parallel: false
+  commands:
+    # 1. TypeScript & Vue files - ESLint fix + Prettier format
+    lint-ts:
+      glob: '**/*.{ts,tsx,vue}'
+      run: pnpm exec eslint --fix {staged_files} && pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+    # 2. Markdown files - markdownlint fix + Prettier format
+    lint-md:
+      glob: '**/*.md'
+      run: pnpm exec markdownlint --fix {staged_files} && pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+    # 3. JSON / YAML - Prettier format only
+    format-json-yml:
+      glob: '**/*.{json,yml,yaml}'
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+# ─── commit-msg ──────────────────────────────────────────────
+# Enforces Conventional Commits format via git-hygiene.
+commit-msg:
+  commands:
+    git-hygiene:
+      run: npx git-hygiene commit {1}
+
+# ─── pre-push ────────────────────────────────────────────────
+# Runs build validation before push.
+pre-push:
+  parallel: true
+  commands:
+    build:
+      run: pnpm build
+
+    check-types:
+      run: pnpm run check-types
+
+    # Ensure branch naming follows standards
+    branch-name:
+      run: npx git-hygiene branch

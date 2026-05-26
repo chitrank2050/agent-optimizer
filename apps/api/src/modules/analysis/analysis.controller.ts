@@ -6,6 +6,7 @@
  */
 import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import type { AnalysisBatch } from '@agent-optimizer/contracts';
 
 import { AnalysisService } from './analysis.service';

@@ -5,14 +5,14 @@
  * with shared contracts before UI state consumes them.
  */
 import {
-  analysisBatchSchema,
-  healthResponseSchema,
-  highLevelSyncResponseSchema,
-  optimizationRunSchema,
   type AnalysisBatch,
   type HealthResponse,
   type HighLevelSyncResponse,
   type OptimizationRun,
+  analysisBatchSchema,
+  healthResponseSchema,
+  highLevelSyncResponseSchema,
+  optimizationRunSchema,
 } from '@agent-optimizer/contracts';
 
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1';

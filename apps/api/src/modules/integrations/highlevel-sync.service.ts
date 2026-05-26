@@ -7,11 +7,12 @@
  */
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+
 import {
-  highLevelSyncRequestSchema,
   type CallLogSummary,
   type HighLevelSyncResponse,
   type SyncedAgent,
+  highLevelSyncRequestSchema,
 } from '@agent-optimizer/contracts';
 
 import { HighLevelClientService } from '../highlevel/highlevel-client.service';
@@ -69,8 +70,12 @@ export class HighLevelSyncService {
       await this.prisma.$transaction([
         this.prisma.recommendation.deleteMany({ where: { agentId: { in: agentDbIds } } }),
         this.prisma.generatedTestCase.deleteMany({ where: { agentId: { in: agentDbIds } } }),
-        this.prisma.transcriptFinding.deleteMany({ where: { transcript: { agentId: { in: agentDbIds } } } }),
-        this.prisma.transcriptAnalysis.deleteMany({ where: { transcript: { agentId: { in: agentDbIds } } } }),
+        this.prisma.transcriptFinding.deleteMany({
+          where: { transcript: { agentId: { in: agentDbIds } } },
+        }),
+        this.prisma.transcriptAnalysis.deleteMany({
+          where: { transcript: { agentId: { in: agentDbIds } } },
+        }),
       ]);
     }
 
@@ -340,12 +345,18 @@ function normalizeTranscriptTurns(record: Record<string, unknown>): Array<{
         return [];
       }
 
-      const speaker = rawRole?.includes('agent') || rawRole === 'bot'
-        ? 'agent'
-        : rawRole?.includes('system')
-          ? 'system'
-          : 'caller';
-      const startedAtSeconds = getNumber(item, ['startTime', 'startedAtSeconds', 'offset', 'start']);
+      const speaker =
+        rawRole?.includes('agent') || rawRole === 'bot'
+          ? 'agent'
+          : rawRole?.includes('system')
+            ? 'system'
+            : 'caller';
+      const startedAtSeconds = getNumber(item, [
+        'startTime',
+        'startedAtSeconds',
+        'offset',
+        'start',
+      ]);
 
       return [{ speaker, text, startedAtSeconds }];
     });
@@ -365,11 +376,12 @@ function normalizeTranscriptTurns(record: Record<string, unknown>): Array<{
 
         const rawRole = line.slice(0, colonIndex).trim().toLowerCase();
         const text = line.slice(colonIndex + 1).trim();
-        const speaker = rawRole === 'bot' || rawRole === 'agent'
-          ? 'agent' as const
-          : rawRole === 'system'
-            ? 'system' as const
-            : 'caller' as const;
+        const speaker =
+          rawRole === 'bot' || rawRole === 'agent'
+            ? ('agent' as const)
+            : rawRole === 'system'
+              ? ('system' as const)
+              : ('caller' as const);
 
         return { speaker, text };
       })

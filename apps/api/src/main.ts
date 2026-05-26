@@ -4,21 +4,19 @@
  * Creates the NestJS application, applies security/CORS/global prefix settings,
  * publishes Swagger docs, and enables graceful Prisma shutdown hooks.
  */
-import 'reflect-metadata';
-
-import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
 import compression from 'compression';
 import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
+import 'reflect-metadata';
 
 import { AppModule } from './app.module';
-import { getWinstonConfig, type AppEnv } from './modules/config';
-import { PrismaService } from './modules/prisma/prisma.service';
 import { API_PREFIX, API_VERSION, APP_NAME } from './common/constants';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { type AppEnv, getWinstonConfig } from './modules/config';
+import { PrismaService } from './modules/prisma/prisma.service';
 
 async function bootstrap(): Promise<void> {
   const ENV = process.env.NODE_ENV ?? 'development';

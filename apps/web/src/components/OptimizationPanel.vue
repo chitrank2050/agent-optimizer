@@ -6,6 +6,7 @@
 -->
 <script setup lang="ts">
 import { Lightbulb } from 'lucide-vue-next';
+
 import type {
   HighLevelSyncResponse,
   OptimizationRecommendation,
@@ -198,10 +199,7 @@ function failedEvaluationCount(
             </div>
           </div>
 
-          <p
-            v-else
-            class="mt-4 rounded-md bg-(--surface) px-3 py-2 text-sm text-(--muted)"
-          >
+          <p v-else class="mt-4 rounded-md bg-(--surface) px-3 py-2 text-sm text-(--muted)">
             Run the optimizer to generate test cases, evaluate the current config, and propose
             changes.
           </p>

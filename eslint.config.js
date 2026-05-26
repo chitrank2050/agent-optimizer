@@ -1,8 +1,8 @@
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import pluginVue from 'eslint-plugin-vue';
-import vueParser from 'vue-eslint-parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import pluginVue from 'eslint-plugin-vue';
+import tseslint from 'typescript-eslint';
+import vueParser from 'vue-eslint-parser';
 
 export default tseslint.config(
   // Global ignores
@@ -43,5 +43,5 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
-  eslintConfigPrettier
+  eslintConfigPrettier,
 );

@@ -2,6 +2,7 @@
  * Tests the optional LLM recommendation adapter without making network calls.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
 import type {
   AgentConfig,
   AnalysisBatch,

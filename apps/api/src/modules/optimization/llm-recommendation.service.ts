@@ -7,12 +7,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
+
 import {
-  recommendationSchema,
   type AgentConfig,
   type AnalysisBatch,
   type OptimizationRecommendation,
   type OptimizationRun,
+  recommendationSchema,
 } from '@agent-optimizer/contracts';
 
 import type { AppEnv } from '../config';
@@ -174,9 +175,17 @@ export class LlmRecommendationService {
       parsedJson.recommendations = parsedJson.recommendations.map((rec: any) => {
         if (typeof rec === 'object' && rec !== null && typeof rec.target === 'string') {
           const target = rec.target.toLowerCase().trim();
-          if (target === 'knowledge base' || target === 'knowledge-base' || target === 'knowledgebase') {
+          if (
+            target === 'knowledge base' ||
+            target === 'knowledge-base' ||
+            target === 'knowledgebase'
+          ) {
             rec.target = 'knowledge_base';
-          } else if (target === 'guard rail' || target === 'guard-rail' || target === 'guard_rail') {
+          } else if (
+            target === 'guard rail' ||
+            target === 'guard-rail' ||
+            target === 'guard_rail'
+          ) {
             rec.target = 'guardrail';
           } else {
             rec.target = target;

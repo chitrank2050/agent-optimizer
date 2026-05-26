@@ -6,6 +6,7 @@
  */
 import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
 import type { OptimizationRun } from '@agent-optimizer/contracts';
 
 import { OptimizationRunResponseDto } from './dto/optimization.dto';

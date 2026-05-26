@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import type { AgentConfig, Transcript } from '@agent-optimizer/contracts';
 
 import { analyzeTranscript, analyzeTranscriptBatch, runOptimizationLoop } from '../src/index.js';
