@@ -1269,11 +1269,11 @@
 </tr>
 <tr>
 <td>Install command</td>
-<td><code>corepack enable &amp;&amp; pnpm install --frozen-lockfile</code></td>
+<td><code>corepack enable &amp;&amp; corepack prepare pnpm@11.1.3 --activate &amp;&amp; pnpm install --frozen-lockfile</code></td>
 </tr>
 <tr>
 <td>Build command</td>
-<td><code>pnpm --filter @agent-optimizer/web build</code></td>
+<td><code>pnpm build:web</code></td>
 </tr>
 <tr>
 <td>Output directory</td>
