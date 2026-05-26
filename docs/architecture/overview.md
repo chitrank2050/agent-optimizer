@@ -19,6 +19,7 @@ flowchart LR
   api --> db["PostgreSQL"]
   api --> ghl["HighLevel Voice AI APIs"]
   api --> ai["AI Evaluation Core"]
+  ai -. optional .-> llm["OpenAI Structured Outputs"]
 ```
 
 The dashboard runs as an embedded HighLevel surface and delegates all sensitive work to the API. The backend owns HighLevel API calls, transcript persistence, analysis runs, generated test cases, recommendation records, and audit-friendly correlation IDs.
@@ -67,7 +68,8 @@ The optimization loop builds on persisted analysis results:
 
 - `packages/ai` generates happy-path and edge-case test cases from the agent prompt plus recurring transcript patterns.
 - The evaluator scores the current prompt/tool configuration against each generated test case's success criteria.
-- The recommendation engine creates proposed prompt, temperature, knowledge-base, or guardrail changes linked to transcript IDs and failed test criteria.
+- The recommendation engine creates proposed prompt, temperature, model, tool/action, knowledge-base, or guardrail changes linked to transcript IDs and failed test criteria.
+- If `OPENAI_API_KEY` is configured, the API asks OpenAI for structured recommendation refinement using normalized findings, generated tests, evaluations, and baseline recommendations. Raw transcript turns are not sent to that adapter.
 - `apps/api` persists generated tests, latest evaluations, and recommendations behind deterministic external keys so reruns update the current proposal set.
 - `apps/web` exposes `Run optimizer` for each synced agent and shows generated tests, pass/fail/risk evaluations, and before/after recommendation reasoning.
 

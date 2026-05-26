@@ -52,6 +52,10 @@ export class EnvConfig {
   @IsString()
   @IsOptional()
   OPENAI_API_KEY?: string;
+
+  @IsString()
+  @IsOptional()
+  OPENAI_MODEL?: string;
 }
 
 /**

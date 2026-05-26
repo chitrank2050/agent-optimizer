@@ -1,3 +1,9 @@
+/*
+ * Global dashboard design tokens and base layout primitives.
+ *
+ * Component files own local structure; this stylesheet owns shared colors,
+ * typography, and responsive page primitives used across the embedded app.
+ */
 @import 'tailwindcss';
 
 :root {

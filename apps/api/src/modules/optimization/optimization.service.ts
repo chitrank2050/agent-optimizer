@@ -25,12 +25,15 @@ import {
 
 import { AnalysisService } from '../analysis/analysis.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { LlmRecommendationService } from './llm-recommendation.service';
 
 @Injectable()
 export class OptimizationService {
   constructor(
     @Inject(PrismaService) private readonly prisma: PrismaService,
     @Inject(AnalysisService) private readonly analysisService: AnalysisService,
+    @Inject(LlmRecommendationService)
+    private readonly llmRecommendations: LlmRecommendationService,
   ) {}
 
   /**
@@ -47,7 +50,17 @@ export class OptimizationService {
     }
 
     const analysis = await this.analysisService.analyzeAgent(agentId);
-    const optimization = runOptimizationLoop(toAgentConfig(agent), analysis);
+    const agentConfig = toAgentConfig(agent);
+    const deterministicOptimization = runOptimizationLoop(agentConfig, analysis);
+    const recommendations = await this.llmRecommendations.recommend({
+      agent: agentConfig,
+      analysis,
+      optimization: deterministicOptimization,
+    });
+    const optimization: OptimizationRun = {
+      ...deterministicOptimization,
+      recommendations,
+    };
 
     return this.persistOptimization(agentId, optimization);
   }

@@ -37,7 +37,7 @@ Default local URLs:
 
 The monorepo uses one root `.env` file. The API config module resolves that file explicitly and validates it at boot with Nest Config plus `class-validator`.
 
-`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. AI provider keys are intentionally optional because the optimizer ships with deterministic analyzer, test-generation, and recommendation logic.
+`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. OpenAI keys are optional because the optimizer ships with deterministic analyzer, test-generation, and recommendation logic, then refines recommendations through structured outputs when `OPENAI_API_KEY` is present.
 
 ## HighLevel Sandbox Setup
 
@@ -48,9 +48,18 @@ GHL_LOCATION_ID=your_location_id
 GHL_LOCATION_PIT=pit-your-location-token
 GHL_API_BASE_URL=https://services.leadconnectorhq.com
 GHL_API_VERSION=2021-07-28
+VITE_API_BASE_URL=http://localhost:3000/api/v1
+VITE_GHL_LOCATION_ID=your_location_id
 ```
 
 The API uses `GHL_LOCATION_PIT` for HighLevel requests. The web dashboard uses `VITE_GHL_LOCATION_ID` to tell the sync endpoint which location to import.
+
+Optional LLM recommendation refinement:
+
+```bash
+OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4.1-mini
+```
 
 ```bash
 curl --request POST \

@@ -1,3 +1,10 @@
+/**
+ * AI evaluation core for the Voice AI Agent Optimizer.
+ *
+ * Keeps transcript analysis, pattern aggregation, generated test scenarios,
+ * evaluation scoring, and recommendation generation pure and deterministic so
+ * the API shell can persist results without coupling business logic to I/O.
+ */
 import type {
   AgentConfig,
   AnalysisBatch,

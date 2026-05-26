@@ -13,6 +13,8 @@ out
 # Tests
 /coverage
 /.nyc_output
+/test-results
+/playwright-report
 
 # Runtime data
 pids

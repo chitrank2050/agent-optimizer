@@ -1,3 +1,9 @@
+/**
+ * Shared runtime contracts for the Voice AI Agent Optimizer.
+ *
+ * These Zod schemas define the stable API boundary between the NestJS backend,
+ * Vue dashboard, and pure AI evaluation package.
+ */
 import { z } from 'zod';
 
 export const healthStatusSchema = z.enum(['ok', 'degraded', 'down']);

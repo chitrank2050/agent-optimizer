@@ -19,14 +19,11 @@ GHL_LOCATION_ID=your_highlevel_location_id
 GHL_LOCATION_PIT=pit-your-location-token
 GHL_API_BASE_URL=https://services.leadconnectorhq.com
 GHL_API_VERSION=2021-07-28
-```
-
-For the web app:
-
-```bash
 VITE_API_BASE_URL=http://localhost:3000/api/v1
 VITE_GHL_LOCATION_ID=your_highlevel_location_id
 ```
+
+`GHL_ACCOUNT_PIT` and `GHL_AGENT_ID` can be kept in `.env` as sandbox reference values, but the running app only needs the location PIT plus the location ID used by the dashboard sync request.
 
 Start locally:
 

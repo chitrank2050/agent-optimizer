@@ -2,7 +2,7 @@
 
 Agent Optimizer is a HighLevel Voice AI companion app that turns call history into a repeatable improvement loop: transcript analysis, generated test scenarios, and AI-backed optimization recommendations.
 
-This repository contains the complete implementation: a Vue dashboard embedded through HighLevel, a NestJS API, durable PostgreSQL persistence, HighLevel Voice AI synchronization, deterministic AI evaluation logic, generated test scenarios, and evidence-linked optimization recommendations.
+This repository contains the complete implementation: a Vue dashboard embedded through HighLevel, a NestJS API, durable PostgreSQL persistence, HighLevel Voice AI synchronization, deterministic AI evaluation logic, optional OpenAI structured-output recommendation refinement, generated test scenarios, and evidence-linked optimization recommendations.
 
 > [!IMPORTANT]
 > Recommendations are proposed for review. The system does not silently apply prompt or configuration changes to a live Voice AI agent.
@@ -29,7 +29,7 @@ The HighLevel integration path is a Marketplace Custom Page rendered inside High
 | Frontend  | Vue 3 + Vite                  | Matches the task brief and does not require SSR                               |
 | Contracts | Zod                           | Runtime validation plus shared TypeScript types                               |
 | Config    | Nest Config + class-validator | Root `.env` loading with typed boot-time validation                           |
-| AI Core   | TypeScript package            | Pure analysis logic that can run deterministically or behind an LLM adapter   |
+| AI Core   | TypeScript + OpenAI adapter   | Stable deterministic baseline with optional structured-output refinement      |
 | Database  | PostgreSQL + Prisma           | Durable storage for agents, transcripts, findings, tests, and recommendations |
 | Tests     | Vitest + SWC, Playwright      | Fast TS unit/integration transforms and real browser dashboard coverage       |
 
@@ -76,6 +76,7 @@ Implemented:
 - Vue dashboard action to run analysis for a synced agent and inspect scores, recurring issues, and missed criteria
 - Deterministic test generation from agent prompt plus transcript failure patterns
 - Test evaluation harness that scores the current prompt/tools against generated success criteria
+- Optional OpenAI Responses API adapter that refines recommendations with structured JSON output when `OPENAI_API_KEY` is configured
 - Persisted optimization recommendations with before/after reasoning, evidence IDs, and proposed status
 - Vue dashboard action to run the full optimizer loop and review generated tests, evaluation results, and recommendations
 - Playwright dashboard QA across desktop and mobile viewports for the sync, analysis, and optimizer flow
@@ -83,7 +84,8 @@ Implemented:
 Operational boundaries:
 
 - HighLevel marketplace OAuth and signed user-context verification
-- LLM-backed analyzer/test generator; the production-safe implementation uses deterministic logic against the same structured contracts
+- LLM-backed transcript analyzer/test generator; the production-safe implementation uses deterministic logic against the same structured contracts
+- OpenAI recommendation refinement is optional and sends normalized findings/tests/evaluations, not raw transcript turns
 - Recommendation approval/apply flow back into HighLevel `PATCH /voice-ai/agents/:agentId`
 
 Sandbox findings:

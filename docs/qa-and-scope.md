@@ -30,6 +30,7 @@
 - Optimization recommendations:
   - prompt updates
   - temperature suggestions
+  - model/tool/action suggestions through optional LLM refinement
   - knowledge-base suggestions
   - guardrail suggestions
   - before/after reasoning
@@ -40,8 +41,8 @@
 
 ## Production Boundaries
 
-- The analyzer, test generator, evaluator, and recommendation engine are deterministic TypeScript logic in `packages/ai`.
-- LLM provider integration is not required for deterministic review. The contract is ready for an LLM judge/generator that emits the same structured outputs.
+- The analyzer, test generator, evaluator, and baseline recommendation engine are deterministic TypeScript logic in `packages/ai`.
+- LLM recommendation refinement is functional when `OPENAI_API_KEY` is configured. It uses structured JSON output and sends normalized findings/tests/evaluations rather than raw transcript turns.
 - HighLevel Marketplace signed user context is documented as the production auth path.
 - Applying recommendations back to HighLevel is not automatic.
 - `PATCH /voice-ai/agents/:agentId` belongs behind an approval flow to avoid unsafe live-agent changes.
