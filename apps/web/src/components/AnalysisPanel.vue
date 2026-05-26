@@ -58,15 +58,15 @@ function patternLabel(pattern: PerformancePattern): string {
 
 <template>
   <section class="mx-auto max-w-7xl px-6 pb-10 lg:px-8">
-    <div class="rounded-md border border-[var(--border)] bg-white p-6">
+    <div class="rounded-md border border-(--border) bg-white p-6">
       <div class="flex items-center gap-3">
-        <BarChart3 class="h-5 w-5 text-[var(--accent)]" aria-hidden="true" />
+        <BarChart3 class="h-5 w-5 text-(--accent)" aria-hidden="true" />
         <h2 class="text-lg font-semibold">Transcript Analysis</h2>
       </div>
 
       <p
         v-if="analysisError"
-        class="mt-4 rounded-md bg-[var(--danger-bg)] px-3 py-2 text-sm text-[var(--danger)]"
+        class="mt-4 rounded-md bg-(--danger-bg) px-3 py-2 text-sm text-(--danger)"
       >
         {{ analysisError }}
       </p>
@@ -75,12 +75,12 @@ function patternLabel(pattern: PerformancePattern): string {
         <article
           v-for="agent in integration.syncedAgents"
           :key="`${agent.id}-analysis`"
-          class="rounded-md border border-[var(--border)] p-4"
+          class="rounded-md border border-(--border) p-4"
         >
           <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h3 class="text-sm font-semibold">{{ agent.name }}</h3>
-              <p class="mt-1 font-mono text-xs text-[var(--muted)]">{{ agent.id }}</p>
+              <p class="mt-1 font-mono text-xs text-(--muted)">{{ agent.id }}</p>
             </div>
             <p class="text-sm font-medium text-(--muted)">
               {{ analysesForAgent(analysesByAgentId, agent.id).length }} analyzed calls
@@ -170,7 +170,7 @@ function patternLabel(pattern: PerformancePattern): string {
 
           <p
             v-else
-            class="mt-4 rounded-md bg-[var(--surface)] px-3 py-2 text-sm text-[var(--muted)]"
+            class="mt-4 rounded-md bg-(--surface) px-3 py-2 text-sm text-(--muted)"
           >
             Run analysis after syncing transcripts for this agent.
           </p>

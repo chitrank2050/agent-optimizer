@@ -34,18 +34,18 @@ const loopCards: Array<{ title: string; description: string; icon: Component }> 
 </script>
 
 <template>
-  <section class="border-b border-[var(--border)] bg-white">
+  <section class="border-b border-(--border) bg-white">
     <div class="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-8 lg:px-8">
       <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <p class="text-sm font-medium text-[var(--muted)]">HighLevel Voice AI</p>
+          <p class="text-sm font-medium text-(--muted)">HighLevel Voice AI</p>
           <h1 class="mt-2 text-3xl font-semibold tracking-normal">Agent Optimizer</h1>
         </div>
 
-        <div class="flex items-center gap-3 rounded-md border border-[var(--border)] px-4 py-3">
-          <Activity class="h-5 w-5 text-[var(--accent)]" aria-hidden="true" />
+        <div class="flex items-center gap-3 rounded-md border border-(--border) px-4 py-3">
+          <Activity class="h-5 w-5 text-(--accent)" aria-hidden="true" />
           <div>
-            <p class="text-xs font-medium uppercase text-[var(--muted)]">API Status</p>
+            <p class="text-xs font-medium uppercase text-(--muted)">API Status</p>
             <p class="text-sm font-semibold">
               <span v-if="health">{{ health.status }}</span>
               <span v-else-if="healthError">degraded</span>
@@ -59,11 +59,11 @@ const loopCards: Array<{ title: string; description: string; icon: Component }> 
         <article
           v-for="card in loopCards"
           :key="card.title"
-          class="rounded-md border border-[var(--border)] bg-[var(--panel)] p-5"
+          class="rounded-md border border-(--border) bg-(--panel) p-5"
         >
-          <component :is="card.icon" class="h-5 w-5 text-[var(--accent)]" aria-hidden="true" />
+          <component :is="card.icon" class="h-5 w-5 text-(--accent)" aria-hidden="true" />
           <h2 class="mt-4 text-base font-semibold">{{ card.title }}</h2>
-          <p class="mt-2 text-sm leading-6 text-[var(--muted)]">{{ card.description }}</p>
+          <p class="mt-2 text-sm leading-6 text-(--muted)">{{ card.description }}</p>
         </article>
       </div>
     </div>
