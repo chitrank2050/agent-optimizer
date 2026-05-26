@@ -22,7 +22,6 @@ Set these on the API host:
 
 ```bash
 NODE_ENV=production
-API_PORT=3000
 FRONTEND_ORIGIN=https://your-web-domain.vercel.app
 DATABASE_URL=postgresql://...
 GHL_LOCATION_ID=your_highlevel_location_id
@@ -74,6 +73,8 @@ Recommended settings:
 | Build command     | `corepack enable && pnpm install --frozen-lockfile && pnpm db:generate && pnpm build`    |
 | Start command     | `pnpm --filter @agent-optimizer/api db:migrate:deploy && node apps/api/dist/src/main.js` |
 | Health check path | `/health`                                                                                |
+
+Render provides the public bind port through `PORT`; do not hardcode `API_PORT` on Render unless you intentionally need a local override.
 
 Add the API environment variables from this guide. After deploy, verify:
 

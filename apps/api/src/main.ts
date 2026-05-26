@@ -28,7 +28,8 @@ async function bootstrap(): Promise<void> {
 
   const config = app.get(ConfigService<AppEnv, true>);
   const frontendOrigin = config.get('FRONTEND_ORIGIN', { infer: true });
-  const port = config.get('API_PORT', { infer: true });
+  const port =
+    config.get('PORT', { infer: true }) ?? config.get('API_PORT', { infer: true }) ?? 3000;
 
   app.use(
     helmet({

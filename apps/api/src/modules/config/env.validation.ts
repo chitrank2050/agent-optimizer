@@ -21,6 +21,11 @@ export class EnvConfig {
   @Min(1)
   API_PORT: number = 3000;
 
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  PORT?: number;
+
   @IsUrl({ require_tld: false })
   FRONTEND_ORIGIN: string = 'http://localhost:5173';
 

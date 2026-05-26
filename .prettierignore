@@ -7,5 +7,7 @@ build
 package.json
 pnpm-lock.yaml
 coverage
+site
+test-results
 .env
 CHANGELOG.md
