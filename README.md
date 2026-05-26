@@ -16,9 +16,9 @@
 
 ## Documentation
 
-Full guides live in [docs/](./docs) and are published with MkDocs:
+Full guides live in [docs/](./docs) and are published with MkDocs at [chitrank2050.github.io/agent-optimizer](https://chitrank2050.github.io/agent-optimizer):
 
-- [**Documentation Portal**](./docs/index.md)
+- [**Documentation Portal**](./docs/index.md) or [**Deployed Docs**](https://chitrank2050.github.io/agent-optimizer)
 - [**Architecture**](./docs/architecture/overview.md)
 - [**Development Setup**](./docs/development/setup.md)
 - [**Environment Prerequisites**](./docs/development/environment.md)
