@@ -3,3 +3,4 @@ dist/
 coverage/
 .turbo/
 build/
+CHANGELOG.md

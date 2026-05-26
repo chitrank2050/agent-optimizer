@@ -8,3 +8,4 @@ package.json
 pnpm-lock.yaml
 coverage
 .env
+CHANGELOG.md

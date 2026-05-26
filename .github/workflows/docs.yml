@@ -16,6 +16,7 @@ on:
       - 'mkdocs.yml'
       - 'requirements.txt'
       - '.github/workflows/docs.yml'
+      - 'CHANGELOG.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,6 +54,13 @@ jobs:
         with:
           python-version: '3.14'
           cache: 'pip'
+
+      # Copy root files into docs/ so MkDocs can include them.
+      # The source of truth stays at the root.
+      # These files are ignored by git in docs/ and only exist during CI build.
+      - name: Copy transient docs 📝
+        run: |
+          cp CHANGELOG.md docs/changelog.md
 
       - name: Install MkDocs Material 🛠️
         run: |

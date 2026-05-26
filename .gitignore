@@ -60,3 +60,13 @@ Thumbs.db
 
 # Docker volumes mount here. Not source code.
 docker/data/
+
+# Tooling
+git-cliff*
+new_notes.md
+
+# Documentation
+docs/changelog.md
+site/
+
+scripts/*
