@@ -1199,6 +1199,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nv">VITE_API_BASE_URL</span><span class="o">=</span>https://your-api-domain.onrender.com/api/v1
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nv">VITE_GHL_LOCATION_ID</span><span class="o">=</span>your_highlevel_location_id
 </code></pre></div>
+<p><code>FRONTEND_ORIGIN</code> must match the deployed browser origin exactly and must not include a trailing slash. <code>VITE_API_BASE_URL</code> must include <code>/api/v1</code>; the web client strips that suffix only for the neutral <code>/health</code> endpoint.</p>
 <h2 id="database">Database<a class="headerlink" href="#database" title="Permanent link">&para;</a></h2>
 <p>Use a managed PostgreSQL database. Neon and Render PostgreSQL both work for this app.</p>
 <ol>
@@ -1247,7 +1248,14 @@
 <p>Use the Neon direct connection string for <code>DATABASE_URL</code> during migrations. Avoid the <code>*-pooler.*.neon.tech</code> URL for <code>prisma migrate deploy</code>; pooled URLs are useful for application traffic but can fail or hang during schema migration.</p>
 <p>Add the API environment variables from this guide. After deploy, verify:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/health
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>curl<span class="w"> </span>-i<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Origin: https://your-web-domain.vercel.app&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span>https://your-api-domain.onrender.com/health
 </code></pre></div>
+<p>The CORS response must include:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>access-control-allow-origin: https://your-web-domain.vercel.app
+</code></pre></div>
+<p>If the value has a trailing slash or points at the wrong Vercel project, browser requests will fail even when the API health endpoint is otherwise healthy.</p>
 <h2 id="web-on-vercel">Web on Vercel<a class="headerlink" href="#web-on-vercel" title="Permanent link">&para;</a></h2>
 <p>Create a Vercel project from the same repository.</p>
 <p>Recommended settings:</p>
@@ -1282,10 +1290,11 @@
 </tbody>
 </table>
 <p>Add:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">VITE_API_BASE_URL</span><span class="o">=</span>https://your-api-domain.onrender.com/api/v1
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">VITE_GHL_LOCATION_ID</span><span class="o">=</span>your_highlevel_location_id
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nv">VITE_API_BASE_URL</span><span class="o">=</span>https://your-api-domain.onrender.com/api/v1
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">VITE_GHL_LOCATION_ID</span><span class="o">=</span>your_highlevel_location_id
 </code></pre></div>
 <p>After deploy, open the Vercel URL and confirm the API health panel resolves.</p>
+<p>Because Vite inlines <code>VITE_*</code> values at build time, redeploy Vercel after changing <code>VITE_API_BASE_URL</code> or <code>VITE_GHL_LOCATION_ID</code>.</p>
 <h2 id="highlevel-custom-page">HighLevel Custom Page<a class="headerlink" href="#highlevel-custom-page" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Open the HighLevel Marketplace developer dashboard.</li>
@@ -1300,11 +1309,11 @@
 <h2 id="documentation-on-github-pages">Documentation on GitHub Pages<a class="headerlink" href="#documentation-on-github-pages" title="Permanent link">&para;</a></h2>
 <p>The documentation site uses MkDocs Material</p>
 <p>Local commands:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv-docs
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">source</span><span class="w"> </span>.venv-docs/bin/activate
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>mkdocs<span class="w"> </span>serve
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv-docs
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">source</span><span class="w"> </span>.venv-docs/bin/activate
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>mkdocs<span class="w"> </span>serve
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
 </code></pre></div>
 <p>GitHub Actions builds docs on pull requests and deploys to the <code>gh-pages</code> branch on pushes to <code>main</code> when <code>docs/**</code>, <code>mkdocs.yml</code>, or <code>requirements.txt</code> changes.</p>
 <p>Repository setting:</p>
@@ -1315,15 +1324,15 @@
 <li>Select branch <code>gh-pages</code> and folder <code>/root</code>.</li>
 </ol>
 <p>Expected published URL:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>https://chitrank2050.github.io/agent-optimizer
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>https://chitrank2050.github.io/agent-optimizer
 </code></pre></div>
 <h2 id="deployment-verification">Deployment Verification<a class="headerlink" href="#deployment-verification" title="Permanent link">&para;</a></h2>
 <p>Run these after deployment:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/health
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>--url<span class="w"> </span>https://your-api-domain.onrender.com/api/v1/integrations/highlevel/sync<span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;content-type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span>--data<span class="w"> </span><span class="s1">&#39;{&quot;locationId&quot;:&quot;your_highlevel_location_id&quot;}&#39;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/health
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span>--url<span class="w"> </span>https://your-api-domain.onrender.com/api/v1/integrations/highlevel/sync<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;content-type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>--data<span class="w"> </span><span class="s1">&#39;{&quot;locationId&quot;:&quot;your_highlevel_location_id&quot;}&#39;</span>
 </code></pre></div>
 <p>Then verify through the browser:</p>
 <ol>
