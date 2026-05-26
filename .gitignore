@@ -9,6 +9,7 @@ build
 .turbo
 out
 *.tsbuildinfo
+site
 
 # Tests
 /coverage
@@ -44,6 +45,7 @@ Thumbs.db
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+.venv-docs
 
 # temp directory
 .temp

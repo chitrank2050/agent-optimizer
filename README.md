@@ -188,12 +188,23 @@ Documented boundaries:
 
 ## Documentation
 
+- [Documentation Portal](docs/index.md)
 - [Architecture Overview](docs/architecture/overview.md)
 - [Development Setup](docs/development/setup.md)
 - [Deployment Guide](docs/deployment.md)
 - [HighLevel Sandbox Installation](docs/highlevel-install.md)
 - [Demo Script](docs/demo-script.md)
 - [QA and Scope Notes](docs/qa-and-scope.md)
+
+MkDocs commands:
+
+```bash
+python3 -m venv .venv-docs
+source .venv-docs/bin/activate
+python -m pip install -r requirements.txt
+mkdocs serve
+mkdocs build --strict
+```
 
 ## Team of One Ownership
 

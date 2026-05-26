@@ -35,6 +35,8 @@
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,vue,json,md,yml,yaml,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,vue,json,md,yml,yaml,css}\"",
+    "docs:build": "mkdocs build --strict",
+    "docs:serve": "mkdocs serve",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "db:generate": "pnpm --filter @agent-optimizer/api db:generate",

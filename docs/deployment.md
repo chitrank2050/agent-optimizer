@@ -116,6 +116,35 @@ After deploy, open the Vercel URL and confirm the API health panel resolves.
 
 The sandbox implementation uses `GHL_LOCATION_PIT`. A public Marketplace release should replace that with signed user context plus installed-account credentials.
 
+## Documentation on GitHub Pages
+
+The documentation site uses MkDocs Material, matching the Meterplex docs setup.
+
+Local commands:
+
+```bash
+python3 -m venv .venv-docs
+source .venv-docs/bin/activate
+python -m pip install -r requirements.txt
+mkdocs serve
+mkdocs build --strict
+```
+
+GitHub Actions builds docs on pull requests and deploys to the `gh-pages` branch on pushes to `main` when `docs/**`, `mkdocs.yml`, or `requirements.txt` changes.
+
+Repository setting:
+
+1. Open GitHub repository settings.
+2. Go to `Pages`.
+3. Set source to `Deploy from a branch`.
+4. Select branch `gh-pages` and folder `/root`.
+
+Expected published URL:
+
+```text
+https://chitrank2050.github.io/agent-optimizer
+```
+
 ## Deployment Verification
 
 Run these after deployment:
