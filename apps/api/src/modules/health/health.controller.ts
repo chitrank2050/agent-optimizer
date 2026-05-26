@@ -4,7 +4,7 @@
  * Returns service status, database reachability, timestamp, and the active
  * correlation ID so failures can be traced through logs and screenshots.
  */
-import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
+import { Controller, Get, Inject, VERSION_NEUTRAL } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   HealthCheck,
@@ -22,8 +22,8 @@ import { PrismaHealthIndicator } from './health.service';
 })
 export class HealthController {
     constructor(
-    private health: HealthCheckService,
-    private prismaHealth: PrismaHealthIndicator,
+    @Inject(HealthCheckService) private health: HealthCheckService,
+    @Inject(PrismaHealthIndicator) private prismaHealth: PrismaHealthIndicator,
   ) {}
 
   @Get()
