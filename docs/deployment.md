@@ -45,6 +45,8 @@ VITE_API_BASE_URL=https://your-api-domain.onrender.com/api/v1
 VITE_GHL_LOCATION_ID=your_highlevel_location_id
 ```
 
+`FRONTEND_ORIGIN` must match the deployed browser origin exactly and must not include a trailing slash. `VITE_API_BASE_URL` must include `/api/v1`; the web client strips that suffix only for the neutral `/health` endpoint.
+
 ## Database
 
 Use a managed PostgreSQL database. Neon and Render PostgreSQL both work for this app.
@@ -82,7 +84,18 @@ Add the API environment variables from this guide. After deploy, verify:
 
 ```bash
 curl https://your-api-domain.onrender.com/health
+curl -i \
+  -H "Origin: https://your-web-domain.vercel.app" \
+  https://your-api-domain.onrender.com/health
 ```
+
+The CORS response must include:
+
+```text
+access-control-allow-origin: https://your-web-domain.vercel.app
+```
+
+If the value has a trailing slash or points at the wrong Vercel project, browser requests will fail even when the API health endpoint is otherwise healthy.
 
 ## Web on Vercel
 
@@ -106,6 +119,8 @@ VITE_GHL_LOCATION_ID=your_highlevel_location_id
 ```
 
 After deploy, open the Vercel URL and confirm the API health panel resolves.
+
+Because Vite inlines `VITE_*` values at build time, redeploy Vercel after changing `VITE_API_BASE_URL` or `VITE_GHL_LOCATION_ID`.
 
 ## HighLevel Custom Page
 

@@ -44,6 +44,20 @@ The optimizer is a modular monolith plus embedded dashboard:
 
 ---
 
+## Team Of One Ownership
+
+This submission is scoped as a finished review product, not an open-ended prototype:
+
+- **Product**: The workflow closes the loop from HighLevel transcripts to findings, generated tests, evaluations, and proposed optimizations.
+- **Design**: The dashboard keeps sync status, transcript issues, test cases, and recommendations in one reviewer-friendly surface.
+- **Engineering**: The backend uses modular NestJS boundaries, Prisma persistence, shared contracts, correlation IDs, and structured AI outputs.
+- **QA**: Vitest covers the AI/API logic and Playwright verifies the dashboard flow across desktop and mobile.
+- **Governance**: Recommendations are evidence-linked and consent-gated before any live agent change.
+
+Functional scope and sandbox boundaries are documented in [QA and Scope](./docs/qa-and-scope.md).
+
+---
+
 ## Shared Contract Governance
 
 This monorepo uses `@agent-optimizer/contracts` as the shared boundary package.
