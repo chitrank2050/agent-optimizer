@@ -1,12 +1,15 @@
 # Development Setup
 
+This guide is the local engineering runbook for the optimizer. It covers the root environment file, database setup, verification commands, and API workflows used during development.
+
 ## Prerequisites
 
 - Node.js 24 or newer
 - pnpm 11 or newer
 - Docker
+- HighLevel sandbox location with Voice AI enabled
 
-## Local Setup
+## Local Bootstrap
 
 ```bash
 cp .env.example .env
@@ -17,33 +20,20 @@ pnpm --filter @agent-optimizer/api db:migrate:dev
 pnpm dev
 ```
 
-## Verification
-
-```bash
-pnpm format:check
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm lint
-```
-
 Default local URLs:
 
 - API health: `http://localhost:3000/api/v1/health`
 - API docs: `http://localhost:3000/api/docs`
-- Web app: `http://localhost:5173`
+- Web dashboard: `http://localhost:5173`
 
-## Environment Notes
+## Environment Model
 
-The monorepo uses one root `.env` file. The API config module resolves that file explicitly and validates it at boot with Nest Config plus `class-validator`.
+The monorepo uses one root `.env` file. The API config module loads that file explicitly and validates it at boot with Nest Config plus `class-validator`. The Vite app also reads from the root env file through `apps/web/vite.config.ts`.
 
-`DATABASE_URL` points at the local Docker PostgreSQL container on host port `55432` by default to avoid clashing with a developer's existing Postgres on `5432`. HighLevel keys are required for sandbox sync. LLM keys are optional because the optimizer ships with deterministic analyzer, test-generation, and recommendation logic, then refines recommendations through structured outputs when `LLM_API_KEY` is present.
-
-## HighLevel Sandbox Setup
-
-Use the sandbox location private integration token:
+Required local values:
 
 ```bash
+DATABASE_URL="postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public"
 GHL_LOCATION_ID=your_location_id
 GHL_LOCATION_PIT=pit-your-location-token
 GHL_API_BASE_URL=https://services.leadconnectorhq.com
@@ -52,15 +42,30 @@ VITE_API_BASE_URL=http://localhost:3000/api/v1
 VITE_GHL_LOCATION_ID=your_location_id
 ```
 
-The API uses `GHL_LOCATION_PIT` for HighLevel requests. The web dashboard uses `VITE_GHL_LOCATION_ID` to tell the sync endpoint which location to import.
-
-Optional LLM recommendation refinement:
+Optional LLM refinement:
 
 ```bash
-LLM_API_KEY=sk-...
-LLM_MODEL=gpt-4.1-mini
+LLM_API_KEY=provider-key
+LLM_MODEL=provider-model
 LLM_RESPONSES_URL=https://your-llm-provider.example/v1/responses
 ```
+
+`GHL_ACCOUNT_PIT` and `GHL_AGENT_ID` are useful sandbox reference values, but runtime sync uses `GHL_LOCATION_PIT` and the dashboard location ID.
+
+## Database Commands
+
+```bash
+pnpm docker:up
+pnpm db:generate
+pnpm --filter @agent-optimizer/api db:migrate:dev
+DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public pnpm --filter @agent-optimizer/api exec prisma validate
+```
+
+Prisma 7 reads the datasource URL from `apps/api/prisma.config.ts`, not from `schema.prisma`.
+
+## API Workflows
+
+Sync HighLevel location, agents, actions, and call logs:
 
 ```bash
 curl --request POST \
@@ -69,9 +74,7 @@ curl --request POST \
   --data '{"locationId":"your_location_id"}'
 ```
 
-## Transcript Analysis
-
-After syncing a location with agents and call logs, run transcript analysis for a stored local agent ID:
+Run transcript analysis:
 
 ```bash
 curl --request POST \
@@ -79,7 +82,7 @@ curl --request POST \
   --header 'x-correlation-id: local-analysis-test'
 ```
 
-Read the persisted analysis results without rerunning the analyzer:
+Read persisted analysis:
 
 ```bash
 curl --request GET \
@@ -87,11 +90,7 @@ curl --request GET \
   --header 'x-correlation-id: local-analysis-read'
 ```
 
-The Vue dashboard exposes the same flow: sync the HighLevel location, click `Run analysis` on a synced agent, then review recurring issues and missed criteria.
-
-## Optimization Loop
-
-Run the full optimization loop for a stored local agent ID:
+Run optimization:
 
 ```bash
 curl --request POST \
@@ -99,7 +98,7 @@ curl --request POST \
   --header 'x-correlation-id: local-optimization-test'
 ```
 
-Read persisted generated tests, evaluations, and recommendations without rerunning:
+Read persisted generated tests, evaluations, and recommendations:
 
 ```bash
 curl --request GET \
@@ -107,4 +106,23 @@ curl --request GET \
   --header 'x-correlation-id: local-optimization-read'
 ```
 
-The dashboard exposes this through `Run optimizer`. It reruns transcript analysis, generates happy-path and edge-case tests, evaluates the current agent configuration, and proposes changes without applying them to HighLevel.
+## Verification
+
+```bash
+pnpm format:check
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm lint
+pnpm test:e2e
+```
+
+Playwright starts the Vite app and drives the dashboard through sync, analysis, and optimizer flows on desktop and mobile widths.
+
+## Development Notes
+
+- Use `rg` first for code search.
+- Keep API feature boundaries under `apps/api/src/modules`.
+- Keep shared contracts in `packages/contracts`.
+- Keep pure optimizer logic in `packages/ai`.
+- Do not put secrets in the Vue app; only `VITE_*` values are exposed client-side.

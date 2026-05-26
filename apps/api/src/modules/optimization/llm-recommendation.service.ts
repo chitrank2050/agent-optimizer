@@ -123,11 +123,10 @@ export class LlmRecommendationService {
     }
   }
 
-  private async requestStructuredRecommendations({
-    agent,
-    analysis,
-    optimization,
-  }: RecommendationContext, responsesUrl: string): Promise<OptimizationRecommendation[]> {
+  private async requestStructuredRecommendations(
+    { agent, analysis, optimization }: RecommendationContext,
+    responsesUrl: string,
+  ): Promise<OptimizationRecommendation[]> {
     const response = await fetch(responsesUrl, {
       method: 'POST',
       headers: {

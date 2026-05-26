@@ -1,0 +1,145 @@
+# Deployment Guide
+
+This guide describes a practical production-style deployment for the assignment demo: PostgreSQL on Neon or Render, the NestJS API on Render, the Vue dashboard on Vercel, and a HighLevel Marketplace Custom Page that embeds the dashboard.
+
+## Deployment Shape
+
+```mermaid
+flowchart LR
+  reviewer["Reviewer in HighLevel"] --> customPage["Marketplace Custom Page iframe"]
+  customPage --> web["Vercel: Vue dashboard"]
+  web --> api["Render: NestJS API"]
+  api --> db["Managed PostgreSQL"]
+  api --> ghl["HighLevel LeadConnector APIs"]
+  api -. optional .-> llm["Structured-output LLM provider"]
+```
+
+The frontend is static and safe to deploy separately. The API owns every sensitive value: database URL, HighLevel private integration token, and optional LLM credentials.
+
+## Production Environment Variables
+
+Set these on the API host:
+
+```bash
+NODE_ENV=production
+API_PORT=3000
+FRONTEND_ORIGIN=https://your-web-domain.vercel.app
+DATABASE_URL=postgresql://...
+GHL_LOCATION_ID=your_highlevel_location_id
+GHL_LOCATION_PIT=pit-your-location-token
+GHL_API_BASE_URL=https://services.leadconnectorhq.com
+GHL_API_VERSION=2021-07-28
+```
+
+Optional LLM recommendation refinement:
+
+```bash
+LLM_API_KEY=provider-key
+LLM_MODEL=provider-model
+LLM_RESPONSES_URL=https://your-llm-provider.example/v1/responses
+```
+
+Set these on the web host:
+
+```bash
+VITE_API_BASE_URL=https://your-api-domain.onrender.com/api/v1
+VITE_GHL_LOCATION_ID=your_highlevel_location_id
+```
+
+## Database
+
+Use a managed PostgreSQL database. Neon and Render PostgreSQL both work for this app.
+
+1. Create a PostgreSQL database.
+2. Copy the pooled or direct connection string into `DATABASE_URL`.
+3. Confirm the URL includes SSL settings if required by the provider.
+4. Run migrations from the deployed API build or from a trusted local machine:
+
+```bash
+DATABASE_URL=postgresql://... pnpm --filter @agent-optimizer/api db:migrate:deploy
+```
+
+Prisma 7 reads `DATABASE_URL` through `apps/api/prisma.config.ts`; the schema file intentionally does not contain a datasource URL.
+
+## API on Render
+
+Create a Render Web Service from the GitHub repository.
+
+Recommended settings:
+
+| Setting           | Value                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| Runtime           | Node                                                                                     |
+| Root directory    | repository root                                                                          |
+| Build command     | `corepack enable && pnpm install --frozen-lockfile && pnpm db:generate && pnpm build`    |
+| Start command     | `pnpm --filter @agent-optimizer/api db:migrate:deploy && node apps/api/dist/src/main.js` |
+| Health check path | `/api/v1/health`                                                                         |
+
+Add the API environment variables from this guide. After deploy, verify:
+
+```bash
+curl https://your-api-domain.onrender.com/api/v1/health
+```
+
+## Web on Vercel
+
+Create a Vercel project from the same repository.
+
+Recommended settings:
+
+| Setting          | Value                                               |
+| ---------------- | --------------------------------------------------- |
+| Framework preset | Vite                                                |
+| Root directory   | repository root                                     |
+| Install command  | `corepack enable && pnpm install --frozen-lockfile` |
+| Build command    | `pnpm --filter @agent-optimizer/web build`          |
+| Output directory | `apps/web/dist`                                     |
+
+Add:
+
+```bash
+VITE_API_BASE_URL=https://your-api-domain.onrender.com/api/v1
+VITE_GHL_LOCATION_ID=your_highlevel_location_id
+```
+
+After deploy, open the Vercel URL and confirm the API health panel resolves.
+
+## HighLevel Custom Page
+
+1. Open the HighLevel Marketplace developer dashboard.
+2. Create or open the Agent Optimizer app.
+3. Add a Custom Page for the sub-account distribution target.
+4. Set the page URL to the deployed Vercel dashboard URL.
+5. Install the app into the sandbox sub-account.
+6. Open the Custom Page inside HighLevel.
+7. Click `Sync HighLevel`, then run analysis and optimization.
+
+The sandbox implementation uses `GHL_LOCATION_PIT`. A public Marketplace release should replace that with signed user context plus installed-account credentials.
+
+## Deployment Verification
+
+Run these after deployment:
+
+```bash
+curl https://your-api-domain.onrender.com/api/v1/health
+curl --request POST \
+  --url https://your-api-domain.onrender.com/api/v1/integrations/highlevel/sync \
+  --header 'content-type: application/json' \
+  --data '{"locationId":"your_highlevel_location_id"}'
+```
+
+Then verify through the browser:
+
+1. The dashboard loads from the deployed web URL.
+2. API status shows healthy.
+3. `Sync HighLevel` returns the sandbox agent.
+4. `Run analysis` works when transcripts exist.
+5. `Run optimizer` shows generated tests and proposed recommendations.
+
+## Operational Notes
+
+- Keep `GHL_LOCATION_PIT` and `LLM_API_KEY` only on the API host.
+- Set `FRONTEND_ORIGIN` to the exact deployed web origin to keep CORS tight.
+- Run database migrations before serving reviewer traffic.
+- Do not enable automatic recommendation application without an approval workflow.
+- If HighLevel call logs are empty, create web-call transcripts in the sandbox before recording the demo.

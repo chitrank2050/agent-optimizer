@@ -1,52 +1,25 @@
 # QA and Scope Notes
 
-## Product Scope
+This document separates functional behavior from sandbox or production boundaries. It is written for reviewers and maintainers who need to understand what is real, what is intentionally constrained, and how the project was verified.
 
-- Monorepo foundation with NestJS API, Vue 3/Vite web app, shared contracts, Prisma, and PostgreSQL.
-- Vitest unit/integration tests configured with SWC transforms for the API and AI package.
-- API health endpoint with correlation IDs.
-- Swagger documentation for owned API responses.
-- HighLevel sandbox sync for:
-  - location record
-  - Voice AI agents
-  - agent prompt/config/actions
-  - call-log listing
-  - transcript-like call payload import when HighLevel returns messages/transcript content
-- Persisted transcript analysis:
-  - outcome
-  - score
-  - passed/missed criteria
-  - normalized findings
-  - recurring pattern aggregation
-- Generated test cases:
-  - happy path
-  - edge cases from observed patterns
-  - success criteria
-- Test evaluation harness:
-  - pass/fail/risk status
-  - score
-  - failed criteria
-  - reasoning
-- Optimization recommendations:
-  - prompt updates
-  - temperature suggestions
-  - model/tool/action suggestions through optional LLM refinement
-  - knowledge-base suggestions
-  - guardrail suggestions
-  - before/after reasoning
-  - evidence IDs
-  - proposed status
-- Vue dashboard for sync, analysis, generated tests, evaluations, and recommendations.
-- Playwright browser QA for the dashboard flow on desktop and mobile viewports.
+## Functional
 
-## Production Boundaries
+- HighLevel sandbox sync for location, Voice AI agents, agent prompt/config/actions, and call-log summaries.
+- Transcript-like payload import when HighLevel call logs include `transcript` or `messages` arrays.
+- Persisted transcript analysis with outcome, score, passed criteria, missed criteria, normalized findings, and recurring pattern aggregation.
+- Generated happy-path and edge-case test cases with success criteria.
+- Evaluation harness with pass/fail/risk status, score, failed criteria, and reasoning.
+- Optimization recommendations for prompt, temperature, knowledge base, guardrails, and optional model/tool/action refinement through a structured-output LLM endpoint.
+- Vue dashboard for sync, analysis, generated tests, evaluations, and before/after recommendations.
+- Playwright browser QA across desktop and mobile dashboard viewports.
 
-- The analyzer, test generator, evaluator, and baseline recommendation engine are deterministic TypeScript logic in `packages/ai`.
-- LLM recommendation refinement is functional when `LLM_API_KEY` is configured. It uses structured JSON output and sends normalized findings/tests/evaluations rather than raw transcript turns.
-- HighLevel Marketplace signed user context is documented as the production auth path.
+## Boundaries
+
+- The baseline analyzer, test generator, evaluator, and recommendation engine are deterministic TypeScript logic in `packages/ai`.
+- LLM recommendation refinement is optional and only runs when `LLM_API_KEY` and `LLM_RESPONSES_URL` are configured.
+- Marketplace signed user context is documented as the production auth path, while sandbox review uses `GHL_LOCATION_PIT`.
 - Applying recommendations back to HighLevel is not automatic.
-- `PATCH /voice-ai/agents/:agentId` belongs behind an approval flow to avoid unsafe live-agent changes.
-- Real phone-call generation may require paid telephony/Stripe in the sandbox. The project supports web-call or seeded transcript workflows for demo data.
+- Real phone-call generation may require paid telephony/Stripe. Web calls are the recommended sandbox demo path.
 
 ## Verification Commands
 
@@ -68,5 +41,9 @@ DATABASE_URL=postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimize
 - Multi-step persistence uses transactions.
 - Recommendations are proposed, not silently applied.
 - UI has loading, error, and empty states for sync, analysis, and optimization.
-- README and docs state the product scope and production boundaries.
-- Browser screenshots render correctly on desktop and mobile without horizontal overflow.
+- Deployment instructions keep server secrets out of the Vue app.
+- Browser QA checks for console errors, horizontal overflow, and zero-size buttons.
+
+## Demo Data Guidance
+
+If HighLevel returns empty call logs, create short Voice AI web calls in the sandbox before recording the demo. The app will still sync the live agent configuration without call logs, but analysis and optimization need transcript rows to show the complete loop.

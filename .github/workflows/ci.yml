@@ -35,6 +35,7 @@ permissions:
 env:
   NODE_VERSION: 24
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  DATABASE_URL: postgresql://optimizer:optimizer_dev@localhost:55432/agent_optimizer?schema=public
 
 jobs:
   verify:
@@ -69,19 +70,19 @@ jobs:
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: node_modules/.prisma
-          key: ${{ runner.os }}-prisma-${{ hashFiles('prisma/schema.prisma') }}
+          key: ${{ runner.os }}-prisma-${{ hashFiles('apps/api/prisma/schema.prisma') }}
 
       - name: Validate & Generate Prisma client 💎
         if: steps.cache-prisma.outputs.cache-hit != 'true'
         run: |
-          npx prisma validate
+          pnpm --filter @agent-optimizer/api exec prisma validate
           pnpm db:generate
 
-      # - name: Typecheck
-      #   run: pnpm typecheck
+      - name: Typecheck
+        run: pnpm typecheck
 
-      # - name: Test
-      #   run: pnpm test
+      - name: Test
+        run: pnpm test
 
-      # - name: Build
-      #   run: pnpm build
+      - name: Build
+        run: pnpm build
