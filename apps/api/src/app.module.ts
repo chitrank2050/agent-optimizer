@@ -6,8 +6,9 @@
  */
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 
+import { CorrelationIdMiddleware,  RequestLoggerMiddleware } from './common/middleware';
+
 import { AnalysisModule } from './modules/analysis/analysis.module';
-import { CorrelationIdMiddleware } from './modules/common/middleware/correlation-id.middleware';
 import { HealthModule } from './modules/health/health.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { ConfigModule } from './modules/config';
@@ -19,6 +20,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
     ConfigModule,
     PrismaModule,
     HealthModule,
+    // Feature modules
     IntegrationsModule,
     AnalysisModule,
     OptimizationModule,
