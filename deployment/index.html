@@ -1240,12 +1240,12 @@
 </tr>
 <tr>
 <td>Health check path</td>
-<td><code>/api/v1/health</code></td>
+<td><code>/health</code></td>
 </tr>
 </tbody>
 </table>
 <p>Add the API environment variables from this guide. After deploy, verify:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/api/v1/health
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/health
 </code></pre></div>
 <h2 id="web-on-vercel">Web on Vercel<a class="headerlink" href="#web-on-vercel" title="Permanent link">&para;</a></h2>
 <p>Create a Vercel project from the same repository.</p>
@@ -1318,7 +1318,7 @@
 </code></pre></div>
 <h2 id="deployment-verification">Deployment Verification<a class="headerlink" href="#deployment-verification" title="Permanent link">&para;</a></h2>
 <p>Run these after deployment:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/api/v1/health
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl<span class="w"> </span>https://your-api-domain.onrender.com/health
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>curl<span class="w"> </span>--request<span class="w"> </span>POST<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">  </span>--url<span class="w"> </span>https://your-api-domain.onrender.com/api/v1/integrations/highlevel/sync<span class="w"> </span><span class="se">\</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">  </span>--header<span class="w"> </span><span class="s1">&#39;content-type: application/json&#39;</span><span class="w"> </span><span class="se">\</span>
