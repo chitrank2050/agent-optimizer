@@ -1,6 +1,6 @@
 {
   "name": "agent-optimizer",
-  "private": true,
+  "private": false,
   "type": "module",
   "version": "0.1.0",
   "description": "HighLevel Voice AI Agent Optimizer monorepo.",
