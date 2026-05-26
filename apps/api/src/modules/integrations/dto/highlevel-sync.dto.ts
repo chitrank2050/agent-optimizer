@@ -6,6 +6,7 @@
  * arrive as untrusted runtime JSON.
  */
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class HighLevelSyncRequestDto {
   @ApiProperty({
@@ -13,6 +14,8 @@ export class HighLevelSyncRequestDto {
     example: 'AXncyxV2i0xcXXV06w3x',
     description: 'HighLevel sub-account/location id to synchronize.',
   })
+  @IsString()
+  @IsNotEmpty()
   locationId!: string;
 }
 
